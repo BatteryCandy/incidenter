@@ -1,0 +1,518 @@
+scenario_metadata:
+  name: "Retail Chain Third-Party Breach"
+  id: "target_inspired"
+  version: "1.0"
+  description: "A fictional retail data breach inspired by the Target attack, featuring compromise through a third-party HVAC vendor and point-of-sale system infiltration."
+  difficulty: "Medium"
+  estimated_duration: "45-60 minutes"
+  category: "Data Breach"
+  scenario_type: "historical_inspired"
+  max_players: 3
+
+  inspiration:
+    attack_name: "Target Data Breach"
+    year: 2013
+    attribution: "Eastern European cybercriminal group"
+    references:
+      - url: "https://en.wikipedia.org/wiki/2013_Target_Corporation_data_breach"
+        description: "Target Corporation data breach overview"
+
+  environment:
+    sector: "retail"
+    organization:
+      name: "MegaMart Retail Chain"
+      size: "large"
+      employee_count: 8500
+      annual_revenue: "$1B - $5B"
+    infrastructure:
+      type: "hybrid"
+      primary_cloud: "AWS"
+      endpoints: 4200
+      servers: 320
+      critical_systems:
+        - name: "Point of Sale (POS) Network"
+          description: "Payment processing terminals across all stores"
+        - name: "Customer Database"
+          description: "Customer information and purchase history"
+        - name: "Inventory Management System"
+          description: "Real-time inventory tracking and management"
+
+  timeline:
+    attack_start: "2024-01-28 09:15:00"
+    detection_time: "2024-02-10 16:45:00"
+    duration: "13 days"
+
+  learning_objectives:
+    - "Understand third-party risk and vendor security assessment"
+    - "Learn about point-of-sale (POS) system compromises"
+    - "Practice investigating lateral movement through segmented networks"
+    - "Experience payment card industry (PCI) compliance incident response"
+    - "Understand the business impact of retail data breaches"
+
+attack_overview:
+  summary: "Cybercriminals compromised a third-party HVAC vendor through phishing, then used legitimate VPN access to infiltrate a retail chain's network, deploy POS malware, and steal payment card data from customers."
+
+  kill_chain:
+    - phase: "Reconnaissance"
+      description: "Research of third-party vendors with network access to target organization"
+      techniques: ["T1590", "T1596"]
+    - phase: "Initial Access"
+      description: "Compromise of third-party HVAC vendor through phishing"
+      techniques: ["T1566.001", "T1199"]
+    - phase: "Execution"
+      description: "Malware execution and credential harvesting on vendor systems"
+      techniques: ["T1059", "T1204.002"]
+    - phase: "Persistence"
+      description: "Backdoor installation and credential theft for sustained access"
+      techniques: ["T1543.003", "T1078"]
+    - phase: "Privilege Escalation"
+      description: "Domain administrator credential harvesting"
+      techniques: ["T1558.003", "T1550.002"]
+    - phase: "Defense Evasion"
+      description: "Abuse of legitimate VPN access and administrative tools"
+      techniques: ["T1078.004", "T1550.002"]
+    - phase: "Discovery"
+      description: "Network reconnaissance and POS system identification"
+      techniques: ["T1046", "T1018", "T1083"]
+    - phase: "Lateral Movement"
+      description: "Movement from corporate network to POS systems"
+      techniques: ["T1021.001", "T1021.002"]
+    - phase: "Collection"
+      description: "Memory scraping of payment card data from POS terminals"
+      techniques: ["T1005", "T1113"]
+    - phase: "Exfiltration"
+      description: "Stolen payment data transmitted to external servers"
+      techniques: ["T1041", "T1048.003"]
+
+initial_alert:
+  timestamp: "2024-02-10 16:45:00"
+  source: "Fraud Detection Team"
+  alert_type: "high"
+  title: "Unusual Payment Card Fraud Patterns"
+  description: "Significant increase in fraudulent transactions on cards recently used at MegaMart stores. Pattern suggests point-of-sale compromise."
+
+timeline:
+  day_0:
+    "09:15": "Phishing email sent to HVAC vendor employee"
+    "09:17": "Malicious attachment opened - Emotet trojan installed"
+    "14:30": "Initial reconnaissance of vendor network begins"
+  day_1:
+    "14:22": "Lateral movement to vendor domain controller"
+    "16:45": "Credential harvesting from vendor systems"
+  day_3:
+    "08:45": "VPN credentials for MegaMart access obtained"
+  day_4:
+    "23:45": "First unauthorized VPN connection to MegaMart network"
+    "23:50": "Network reconnaissance and scanning begins"
+  day_5:
+    "01:30": "Domain controller access in MegaMart network"
+    "03:15": "Administrative privileges escalated"
+    "04:45": "Firewall rules modified to access POS network"
+    "05:30": "First POS system compromised"
+    "06:00": "POS malware deployment begins across all stores"
+  day_8:
+    "08:00": "First fraudulent card transactions detected"
+  day_13:
+    "16:45": "Fraud detection team identifies breach pattern"
+    "18:00": "Incident response team activated"
+    "20:30": "Network forensics investigation begins"
+  day_14:
+    "08:00": "POS malware analysis completed"
+    "14:30": "Full breach scope determined"
+
+attack_chain:
+  - name: "Initial Access"
+    description: "Compromise of third-party HVAC vendor credentials"
+    techniques: ["T1199 - Trusted Relationship", "T1566.001 - Spearphishing Attachment"]
+    indicators:
+      - "Phishing email to vendor employee"
+      - "Malicious attachment execution"
+      - "Credential harvesting"
+
+  - name: "Privilege Escalation and Lateral Movement"
+    description: "Lateral movement within vendor network"
+    techniques: ["T1078 - Valid Accounts", "T1021.001 - Remote Desktop Protocol"]
+    indicators:
+      - "Suspicious RDP connections"
+      - "Privilege escalation attempts"
+      - "Credential dumping"
+
+  - name: "MegaMart Network Access"
+    description: "Use vendor VPN credentials to access MegaMart network"
+    techniques: ["T1133 - External Remote Services"]
+    indicators:
+      - "VPN connection from unusual location"
+      - "After-hours vendor access"
+      - "Excessive network scanning"
+
+  - name: "Network Reconnaissance"
+    description: "Mapping MegaMart internal network and systems"
+    techniques: ["T1046 - Network Service Scanning", "T1018 - Remote System Discovery"]
+    indicators:
+      - "Network scanning activity"
+      - "Service enumeration"
+      - "Domain enumeration"
+
+  - name: "Lateral Movement"
+    description: "Moving to POS network segments"
+    techniques: ["T1021.002 - SMB/Windows Admin Shares", "T1550.002 - Pass the Hash"]
+    indicators:
+      - "Hash passing attacks"
+      - "Administrative share access"
+      - "Cross-segment network traffic"
+
+  - name: "POS System Compromise"
+    description: "Installation of custom memory-scraping malware"
+    techniques: ["T1055 - Process Injection", "T1005 - Data from Local System"]
+    indicators:
+      - "Malicious process injection"
+      - "Memory scraping activity"
+      - "Credit card data harvesting"
+
+  - name: "Data Exfiltration"
+    description: "Stolen payment data sent to command and control servers"
+    techniques: ["T1041 - Exfiltration Over C2 Channel"]
+    indicators:
+      - "Encrypted outbound connections"
+      - "Data transmission to foreign IPs"
+      - "Unusual traffic volumes"
+
+evidence:
+  items:
+    - id: "ev_001"
+      type: "email"
+      source: "vendor_phishing"
+      importance: "high"
+      description: "HVAC Vendor Phishing Email"
+      content: |
+        From: billing@megamart-corp.com (spoofed)
+        To: j.stevens@chillertech-hvac.com
+        Subject: URGENT: Invoice Discrepancy - Action Required
+        Date: 2024-01-28 09:15:00
+
+        Dear John,
+
+        We've identified a discrepancy in your recent invoice #MT-2024-0387.
+        Please review the attached invoice details immediately.
+
+        If this invoice is incorrect, please contact our billing department
+        within 24 hours to avoid service interruption.
+
+        Attachment: Invoice_MT-2024-0387.exe (disguised as PDF)
+
+        Best regards,
+        MegaMart Billing Department
+
+        [Malicious attachment contains Emotet banking trojan]
+
+    - id: "ev_002"
+      type: "report"
+      source: "vendor_compromise"
+      importance: "critical"
+      description: "ChillerTech Security Incident Report"
+      content: |
+        INCIDENT REPORT - ChillerTech HVAC Services
+        Report ID: CT-IR-2024-002
+        Date: 2024-02-08
+
+        SUMMARY:
+        ChillerTech experienced a security breach involving employee workstation compromise
+        and potential credential theft. The incident was discovered during routine monitoring.
+
+        TIMELINE:
+        2024-01-28 09:17 - Employee opened malicious email attachment
+        2024-01-28 09:18 - Emotet trojan installed on workstation
+        2024-01-29 14:22 - Lateral movement to domain controller
+        2024-01-30 08:45 - VPN credentials harvested
+        2024-02-01 - 2024-02-07 - Unauthorized VPN usage detected
+        2024-02-08 06:30 - Incident discovered and contained
+
+        IMPACT:
+        - 3 workstations compromised
+        - Domain administrator credentials stolen
+        - VPN access credentials for client networks compromised
+        - Client notification required per contract terms
+
+        AFFECTED CLIENTS:
+        - MegaMart Retail Chain (VPN access credentials)
+        - CoolStore Supermarkets (VPN access credentials)
+        - FreezeCorp Cold Storage (VPN access credentials)
+
+        ACTIONS TAKEN:
+        - Infected systems isolated and rebuilt
+        - All passwords reset
+        - VPN access temporarily suspended
+        - Client notification initiated
+
+    - id: "ev_003"
+      type: "log"
+      source: "vpn_logs"
+      importance: "high"
+      description: "Suspicious VPN Access Logs"
+      content: |
+        VPN Access Log - MegaMart Corporate Network
+
+        2024-02-01 23:45:12 [INFO] VPN Connect: chillertech-svc@megamart.com
+        Source IP: 185.220.101.47 (Romania)
+        Duration: 4h 23m
+        Data Transfer: 847 MB down, 2.3 GB up
+
+        2024-02-02 02:15:33 [WARN] Unusual access time: chillertech-svc@megamart.com
+        Typical hours: 08:00-17:00 EST
+        Current time: 02:15 EST
+
+        2024-02-03 22:30:45 [INFO] VPN Connect: chillertech-svc@megamart.com
+        Source IP: 185.220.101.47 (Romania)
+        Duration: 6h 12m
+        Data Transfer: 1.2 GB down, 4.7 GB up
+
+        2024-02-04 01:20:18 [ALERT] High data transfer volume
+        Account: chillertech-svc@megamart.com
+        Transfer: 4.7 GB outbound (exceeds baseline by 2400%)
+
+        2024-02-05 - 2024-02-07 [INFO] Continued unusual access patterns
+        Total sessions: 12
+        Total data transfer: 23.4 GB outbound
+        Geographic anomaly: All connections from Romania
+
+        Note: ChillerTech HVAC is based in Detroit, Michigan
+
+    - id: "ev_004"
+      type: "network"
+      source: "network_scanning"
+      importance: "medium"
+      description: "Internal Network Reconnaissance"
+      content: |
+        Network Scanning Report
+        Source: VPN Pool IP 10.1.100.47 (chillertech-svc)
+
+        SCAN TIMELINE:
+        2024-02-01 23:50:00 - Initial reconnaissance begins
+
+        PORT SCANNING ACTIVITY:
+        - Target Range: 10.1.0.0/16 (Corporate network)
+        - Target Range: 10.2.0.0/16 (Store network)
+        - Ports Scanned: 21, 22, 23, 25, 53, 80, 135, 139, 443, 445, 1433, 3389
+        - Total Hosts Scanned: 12,847
+        - Responsive Hosts: 3,247
+
+        SERVICE ENUMERATION:
+        - SMB shares enumerated on 234 hosts
+        - RDP services identified on 89 hosts
+        - Database services found on 12 hosts
+        - Web services catalogued on 156 hosts
+
+        SPECIFIC TARGETS IDENTIFIED:
+        - POS Controller: 10.2.1.100 (high priority target)
+        - Payment Gateway: 10.2.1.200
+        - Card Processing Server: 10.2.1.150
+        - Store Management Systems: 10.2.1.0/24
+
+        SCANNING PATTERN:
+        - Methodical, automated scanning
+        - Focus on payment-related infrastructure
+        - Evidence of custom scanning tools
+        - Attempts to identify POS systems
+
+    - id: "ev_005"
+      type: "malware"
+      source: "pos_malware"
+      importance: "critical"
+      description: "Point-of-Sale Malware Sample"
+      content: |
+        MALWARE ANALYSIS REPORT
+        Sample: FreezeRAM.exe
+        MD5: 7d865e959b2466918c9863afca942d0f
+        SHA256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+
+        MALWARE CHARACTERISTICS:
+        Type: Memory Scraper / POS Malware
+        Target: Payment card data in memory
+        Persistence: Windows service installation
+
+        CAPABILITIES:
+        - Memory scanning for credit card patterns
+        - Track 1 and Track 2 magnetic stripe data harvesting
+        - CVV and PIN block extraction
+        - Data encryption before exfiltration
+        - Anti-analysis techniques
+
+        CARD DATA PATTERNS TARGETED:
+        - Visa: 4[0-9]{12}(?:[0-9]{3})?
+        - MasterCard: 5[1-5][0-9]{14}
+        - American Express: 3[47][0-9]{13}
+        - Discover: 6(?:011|5[0-9]{2})[0-9]{12}
+
+        COMMUNICATION:
+        C2 Servers:
+        - 185.220.101.52:443 (Romania)
+        - 91.240.118.167:8080 (Netherlands)
+        - 103.224.182.245:80 (Singapore)
+
+        ANTI-ANALYSIS:
+        - Process name mimics legitimate Windows service
+        - Encrypted strings and configuration
+        - VM detection and evasion
+        - Debugger detection
+
+        INSTALLATION METHOD:
+        - Dropped via remote access tools
+        - Installed as Windows service "Windows Payment Processing Service"
+        - Startup persistence via registry modification
+        - Runs with SYSTEM privileges
+
+    - id: "ev_006"
+      type: "intelligence"
+      source: "compromised_cards"
+      importance: "critical"
+      description: "Compromised Card Analysis"
+      content: |
+        PAYMENT CARD COMPROMISE ANALYSIS
+
+        FRAUD DETECTION STATISTICS:
+        Analysis Period: 2024-01-15 to 2024-02-10
+        Total Cards Analyzed: 2,847,293
+        Potentially Compromised: 47,238 (1.66%)
+
+        FRAUD PATTERNS:
+        Common Purchase Locations After MegaMart:
+        - Gas stations (78% of fraud cases)
+        - Online retailers (43% of fraud cases)
+        - ATM cash withdrawals (34% of fraud cases)
+        - Small retail merchants (29% of fraud cases)
+
+        TIMELINE CORRELATION:
+        - First fraudulent transactions: 2024-02-05
+        - Peak fraud activity: 2024-02-08 to 2024-02-10
+        - Geographic concentration: Eastern Europe, Southeast Asia
+
+        CARD ISSUER IMPACT:
+        - Visa: 28,342 cards (60.0%)
+        - MasterCard: 14,171 cards (30.0%)
+        - American Express: 3,304 cards (7.0%)
+        - Discover: 1,421 cards (3.0%)
+
+        STORE LOCATION CORRELATION:
+        Highest impact stores (by compromised cards):
+        1. Store #1247 (Manhattan): 3,847 cards
+        2. Store #0923 (Chicago): 3,234 cards
+        3. Store #1845 (Los Angeles): 2,923 cards
+        4. Store #0456 (Miami): 2,656 cards
+        5. Store #1678 (Atlanta): 2,389 cards
+
+        UNDERGROUND MARKET INTELLIGENCE:
+        - Cards being sold on "JokersStash" marketplace
+        - Price: $8-15 per card with CVV
+        - Seller: "FrostBite_Cards"
+        - Total listings: ~45,000 cards
+        - Batch upload dates match compromise timeline
+
+    - id: "ev_007"
+      type: "forensic"
+      source: "lateral_movement"
+      importance: "high"
+      description: "Network Lateral Movement Evidence"
+      content: |
+        LATERAL MOVEMENT ANALYSIS
+
+        ATTACK PATH RECONSTRUCTION:
+
+        Stage 1: Initial Network Access
+        2024-02-01 23:45 - VPN connection established
+        Entry Point: Corporate network (10.1.0.0/16)
+        Account: chillertech-svc@megamart.com
+
+        Stage 2: Credential Harvesting
+        2024-02-02 01:30 - Domain controller access
+        Method: Kerberoasting attack
+        Target: DC01.megamart.local (10.1.1.10)
+        Credentials Obtained: 12 service accounts
+
+        Stage 3: Privilege Escalation
+        2024-02-02 03:15 - Administrative access achieved
+        Method: Pass-the-hash attack
+        Account: svc-backup@megamart.local
+        Privileges: Domain admin equivalent
+
+        Stage 4: Network Segmentation Bypass
+        2024-02-02 04:45 - Firewall rule manipulation
+        Target: POS network segment (10.2.0.0/16)
+        Method: Legitimate admin tools abuse
+        New Rules: Allow TCP 445, 135, 3389 from corporate
+
+        Stage 5: POS Network Access
+        2024-02-02 05:30 - First POS system compromise
+        Target: Store #1247 POS Controller
+        Method: Remote desktop with stolen credentials
+
+        Stage 6: POS Malware Deployment
+        2024-02-02 06:00 - Malware installation begins
+        Targets: 2,847 POS terminals across 89 stores
+        Method: Automated deployment via management tools
+
+        TIMELINE: 6 hours from initial access to POS compromise
+        SUCCESS FACTORS:
+        - Overprivileged vendor access
+        - Insufficient network segmentation
+        - Shared administrative credentials
+        - Lack of privileged access monitoring
+
+solution:
+  attack_type: "Third-Party Supply Chain Compromise"
+  attack_vector: "Phishing attack against HVAC vendor followed by VPN access abuse"
+  primary_objective: "Payment card data theft from point-of-sale systems"
+  secondary_objectives:
+    - "Network reconnaissance and mapping"
+    - "Credential harvesting and privilege escalation"
+    - "Network segmentation bypass"
+    - "Persistent access establishment"
+  key_indicators:
+    - "Unusual VPN access patterns from foreign IP addresses"
+    - "Third-party vendor security incident notification"
+    - "Network scanning activity from vendor account"
+    - "POS malware installation and memory scraping"
+    - "Fraudulent payment card transactions"
+    - "Command and control communications to foreign servers"
+  timeline_summary: "13-day attack from initial phishing (Jan 28) through vendor compromise, VPN access abuse, network lateral movement, POS malware deployment, and detection via fraud patterns (Feb 10)"
+  business_impact:
+    financial: "Estimated $50M+ in incident response, legal fees, regulatory fines, and business disruption"
+    operational: "Store operations disrupted, payment systems offline, customer trust damaged"
+    regulatory: "PCI DSS violations, state breach notification requirements, potential SEC reporting"
+    reputation: "Significant brand damage, customer loss, stock price impact"
+
+scoring:
+  investigation_areas:
+    - area: "Third-party Risk Assessment"
+      max_points: 25
+      description: "Understanding vendor compromise and supply chain attack vector"
+    - area: "Network Security Analysis"
+      max_points: 30
+      description: "VPN access analysis, lateral movement investigation, segmentation bypass"
+    - area: "Malware Analysis and Impact"
+      max_points: 25
+      description: "POS malware capabilities, data theft methods, card compromise scope"
+    - area: "Incident Timeline Reconstruction"
+      max_points: 20
+      description: "Attack progression timeline and detection timeline analysis"
+
+  critical_evidence:
+    - "Vendor security incident report (ev_002)"
+    - "VPN access logs showing Romanian connections (ev_003)"
+    - "POS malware analysis report (ev_005)"
+    - "Compromised payment card statistics (ev_006)"
+
+  time_pressure:
+    level: "medium"
+    description: "Ongoing fraud losses and regulatory notification deadlines create moderate time pressure"
+
+  red_herrings:
+    - "Multiple international C2 servers may suggest state-sponsored activity"
+    - "High technical sophistication might point to advanced persistent threat group"
+    - "Multiple affected stores could indicate insider threat scenario"
+
+learning_objectives:
+  - "Understand third-party risk and vendor security assessment"
+  - "Learn about point-of-sale (POS) system compromises"
+  - "Practice investigating lateral movement through segmented networks"
+  - "Experience payment card industry (PCI) compliance incident response"
+  - "Understand the business impact of retail data breaches"

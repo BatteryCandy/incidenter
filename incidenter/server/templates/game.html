@@ -1,0 +1,572 @@
+{% extends "base.html" %}
+
+{% block title %}Playing {{ scenario.scenario_metadata.name }} - Incidenter{% endblock %}
+
+{% block extra_css %}
+<style>
+    .chat-container {
+        height: 400px;
+        overflow-y: auto;
+        border: 1px solid var(--border-grey);
+        border-radius: 5px;
+        padding: 15px;
+        background-color: white;
+    }
+    .message {
+        margin-bottom: 15px;
+        padding: 10px;
+        border-radius: 5px;
+    }
+    .message.user {
+        background-color: var(--primary-red);
+        color: white;
+        margin-left: 20%;
+    }
+    .message.facilitator {
+        background-color: var(--light-grey);
+        margin-right: 20%;
+        border-left: 3px solid var(--primary-red);
+    }
+    .evidence-card {
+        cursor: pointer;
+        transition: all 0.3s;
+        border: 1px solid var(--border-grey);
+    }
+    .evidence-card:hover {
+        transform: scale(1.02);
+        box-shadow: 0 4px 8px rgba(220, 38, 38, 0.15);
+        border-color: var(--primary-red);
+    }
+    .investigation-input {
+        position: sticky;
+        bottom: 0;
+        background-color: white;
+        padding: 15px;
+        border-top: 1px solid var(--border-grey);
+    }
+    .session-info {
+        font-size: 0.9em;
+    }
+    .btn-primary {
+        background-color: var(--primary-red);
+        border-color: var(--primary-red);
+    }
+    .btn-primary:hover {
+        background-color: var(--secondary-red);
+        border-color: var(--secondary-red);
+    }
+    .btn-outline-info {
+        color: var(--medium-grey);
+        border-color: var(--medium-grey);
+    }
+    .btn-outline-info:hover {
+        background-color: var(--medium-grey);
+        border-color: var(--medium-grey);
+        color: white;
+    }
+    .btn-outline-secondary {
+        color: var(--dark-grey);
+        border-color: var(--dark-grey);
+    }
+    .btn-outline-secondary:hover {
+        background-color: var(--dark-grey);
+        border-color: var(--dark-grey);
+        color: white;
+    }
+    .btn-outline-success {
+        color: var(--primary-red);
+        border-color: var(--primary-red);
+    }
+    .btn-outline-success:hover {
+        background-color: var(--primary-red);
+        border-color: var(--primary-red);
+        color: white;
+    }
+    .card-header.bg-success {
+        background-color: var(--dark-grey) !important;
+    }
+    .card-header.bg-warning {
+        background-color: var(--medium-grey) !important;
+        color: white !important;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2 style="color: var(--dark-grey);">
+                <i class="fas fa-play-circle me-2" style="color: var(--primary-red);"></i>
+                {{ scenario.scenario_metadata.name }}
+            </h2>
+            <div class="session-info">
+                <span class="badge bg-primary">{{ session.player_name }}</span>
+                <span class="badge bg-secondary">{{ session.current_phase }}</span>
+                <span class="badge bg-secondary" id="hints-counter">Hints: {{ session.hints_used }}</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Main Investigation Area -->
+    <div class="col-lg-8">
+        <!-- Chat Interface -->
+        <div class="card mb-4">
+            <div class="card-header bg-dark text-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-comments"></i> Investigation Console
+                </h5>
+            </div>
+            <div class="card-body p-0">
+                <div id="chat-container" class="chat-container">
+                    <div class="message facilitator">
+                        <strong>AI Facilitator:</strong><br>
+                        Welcome to the {{ scenario.scenario_metadata.name }} investigation.
+                        You are the lead incident responder. Review the scenario background and initial alert, then begin your investigation.
+                        <br><br>
+                        <strong>Background:</strong><br>
+                        {{ scenario.attack_overview.summary|replace('\n', '<br>')|safe }}
+                        <br><br>
+                        <strong>Initial Alert:</strong><br>
+                        <div class="alert alert-warning p-3" style="background: #f8f9fa; border-radius: 5px;">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <h6 class="mb-0">{{ scenario.initial_alert.title }}</h6>
+                                <span class="badge bg-{{ 'danger' if scenario.initial_alert.alert_type == 'high' else 'warning' if scenario.initial_alert.alert_type == 'medium' else 'info' }}">
+                                    {{ scenario.initial_alert.alert_type|title }}
+                                </span>
+                            </div>
+                            <div class="small text-muted mb-2">
+                                <strong>Time:</strong> {{ scenario.initial_alert.timestamp }} |
+                                <strong>Source:</strong> {{ scenario.initial_alert.source }}
+                            </div>
+                            <p class="mb-0">{{ scenario.initial_alert.description }}</p>
+                        </div>
+                    </div>
+
+                    <!-- Investigation history will be loaded here -->
+                    <div id="investigation-history">
+                        {% for action in session.investigation_actions %}
+                        <div class="message user">
+                            <strong>{{ session.player_name }}:</strong><br>
+                            <strong>Action:</strong> {{ action.action }}<br>
+                            {% if action.details %}
+                            <strong>Details:</strong> {{ action.details }}
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Investigation Input -->
+        <div class="investigation-input">
+            <form id="investigation-form">
+                <div class="row">
+                    <div class="col-md-4">
+                        <select class="form-select" id="action-type" required>
+                            <option value="">Select Action</option>
+                            <option value="examine_logs">Examine Logs</option>
+                            <option value="analyze_network">Analyze Network Traffic</option>
+                            <option value="interview_user">Interview User</option>
+                            <option value="check_system">Check System Status</option>
+                            <option value="run_command">Run Command</option>
+                            <option value="analyze_file">Analyze File</option>
+                            <option value="search_database">Search Database</option>
+                            <option value="contact_vendor">Contact Vendor</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <input type="text" class="form-control" id="action-details"
+                               placeholder="Describe your investigation action..." required>
+                    </div>
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="fas fa-search"></i> Investigate
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="col-lg-4">
+        <!-- Evidence Discovered -->
+        <div class="card mb-4">
+            <div class="card-header bg-success text-white">
+                <h6 class="mb-0">
+                    <i class="fas fa-clipboard-list"></i>
+                    Evidence Discovered ({{ session.evidence_discovered|length }})
+                </h6>
+            </div>
+            <div class="card-body" style="max-height: 300px; overflow-y: auto;">
+                {% if session.evidence_discovered %}
+                    {% for evidence in session.evidence_discovered %}
+                    <div class="evidence-card card mb-2" data-bs-toggle="modal" data-bs-target="#evidenceModal{{ loop.index }}">
+                        <div class="card-body py-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="mb-0">{{ evidence.type|default('Unknown')|title }}</h6>
+                                    <small class="text-muted">{{ evidence.source|default('Unknown Source') }}</small>
+                                </div>
+                                <span class="badge bg-{{ 'danger' if evidence.importance == 'critical' else 'warning' if evidence.importance == 'high' else 'info' if evidence.importance == 'medium' else 'secondary' }}">
+                                    {{ evidence.importance|default('unknown') }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Evidence Modal -->
+                    <div class="modal fade" id="evidenceModal{{ loop.index }}" tabindex="-1">
+                        <div class="modal-dialog modal-lg">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">{{ evidence.type|default('Unknown')|title }} - {{ evidence.source|default('Unknown Source') }}</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <p><strong>Description:</strong> {{ evidence.description|default('No description available') }}</p>
+                                    <div class="bg-light p-3 rounded">
+                                        <pre>{{ evidence.content|default('No content available') }}</pre>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="text-muted">No evidence discovered yet. Start investigating to find clues!</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="card mb-4">
+            <div class="card-header bg-warning text-dark">
+                <h6 class="mb-0">
+                    <i class="fas fa-bolt"></i> Quick Actions
+                </h6>
+            </div>
+            <div class="card-body">
+                <button class="btn btn-outline-info btn-sm w-100 mb-2" onclick="getHint()">
+                    <i class="fas fa-lightbulb"></i> Get Hint
+                </button>
+                <button class="btn btn-outline-secondary btn-sm w-100 mb-2" data-bs-toggle="modal" data-bs-target="#theoryModal">
+                    <i class="fas fa-brain"></i> Submit Theory
+                </button>
+                <button class="btn btn-outline-success btn-sm w-100" onclick="completeScenario()">
+                    <i class="fas fa-flag-checkered"></i> Complete Scenario
+                </button>
+            </div>
+        </div>
+
+        <!-- Session Stats -->
+        <div class="card">
+            <div class="card-header bg-info text-white">
+                <h6 class="mb-0">
+                    <i class="fas fa-chart-line"></i> Investigation Stats
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-4">
+                        <h5 class="text-primary">{{ session.investigation_actions|length }}</h5>
+                        <small>Actions</small>
+                    </div>
+                    <div class="col-4">
+                        <h5 class="text-success">{{ session.evidence_discovered|length }}</h5>
+                        <small>Evidence</small>
+                    </div>
+                    <div class="col-4">
+                        <h5 class="text-warning">{{ session.theories_submitted|length }}</h5>
+                        <small>Theories</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Theory Submission Modal -->
+<div class="modal fade" id="theoryModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Submit Investigation Theory</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="theory-form">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="theory-text" class="form-label">Your Theory:</label>
+                        <textarea class="form-control" id="theory-text" rows="5"
+                                  placeholder="Describe your theory about the attack, including who was responsible, how it was carried out, and what the goals were..." required></textarea>
+                    </div>
+                    <div class="alert alert-info">
+                        <strong>Tip:</strong> Include details about the attack vector, techniques used, threat actor profile, and timeline based on the evidence you've discovered.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Submit Theory</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(document).ready(function() {
+    // Investigation form submission
+    $('#investigation-form').submit(function(e) {
+        e.preventDefault();
+
+        const action = $('#action-type').val();
+        const details = $('#action-details').val();
+
+        if (!action || !details) {
+            alert('Please select an action and provide details.');
+            return;
+        }
+
+        // Add user message to chat
+        addMessage('user', '{{ session.player_name }}', `<strong>Action:</strong> ${action}<br><strong>Details:</strong> ${details}`);
+
+        // Send investigation request
+        $.ajax({
+            url: '/api/investigate',
+            method: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({
+                action: action,
+                details: details
+            }),
+            success: function(response) {
+                if (response.success) {
+                    // Add facilitator response
+                    addMessage('facilitator', 'AI Facilitator', response.response);
+
+                    // Update actions counter in Investigation Stats
+                    const actionsCounter = document.querySelector('.row.text-center .col-4:first-child h5');
+                    if (actionsCounter) {
+                        const currentActions = parseInt(actionsCounter.textContent) || 0;
+                        actionsCounter.textContent = currentActions + 1;
+                    }
+
+                    // If evidence was found, update the evidence section dynamically
+                    if (response.evidence_found) {
+                        addEvidenceToPage(response.evidence_found);
+                        addMessage('facilitator', 'System', `🎯 <strong>Evidence Discovered!</strong><br><strong>${response.evidence_found.type}</strong> - ${response.evidence_found.description}`);
+                    }
+                } else {
+                    addMessage('facilitator', 'System', 'Error: ' + response.error);
+                }
+            },
+            error: function() {
+                addMessage('facilitator', 'System', 'Error: Could not process investigation action.');
+            }
+        });
+
+        // Clear form
+        $('#action-details').val('');
+        $('#action-type').val('');
+    });
+
+    // Theory form submission
+    $('#theory-form').submit(function(e) {
+        e.preventDefault();
+
+        const theory = $('#theory-text').val();
+
+        $.ajax({
+            url: '/api/submit_theory',
+            method: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({
+                theory: theory
+            }),
+            success: function(response) {
+                if (response.success) {
+                    addMessage('user', '{{ session.player_name }}', `<strong>Theory Submitted:</strong><br>${theory}`);
+                    addMessage('facilitator', 'AI Facilitator', `<strong>Feedback:</strong><br>${response.feedback}<br><strong>Accuracy Score:</strong> ${response.accuracy_score}/100`);
+
+                    // Update theories counter in Investigation Stats
+                    const theoriesCounter = document.querySelector('.row.text-center .col-4:last-child h5');
+                    if (theoriesCounter) {
+                        const currentTheories = parseInt(theoriesCounter.textContent) || 0;
+                        theoriesCounter.textContent = currentTheories + 1;
+                    }
+
+                    $('#theoryModal').modal('hide');
+                    $('#theory-text').val('');
+                } else {
+                    alert('Error: ' + response.error);
+                }
+            },
+            error: function() {
+                alert('Error: Could not submit theory.');
+            }
+        });
+    });
+});
+
+function addMessage(type, sender, content) {
+    const chatContainer = document.getElementById('chat-container');
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `message ${type}`;
+    messageDiv.innerHTML = `<strong>${sender}:</strong><br>${content}`;
+    chatContainer.appendChild(messageDiv);
+    chatContainer.scrollTop = chatContainer.scrollHeight;
+}
+
+function addEvidenceToPage(evidence) {
+    const evidenceContainer = document.querySelector('.card-body[style*="max-height: 300px"]');
+    const noEvidenceMsg = evidenceContainer.querySelector('.text-muted');
+
+    // Remove "no evidence" message if it exists
+    if (noEvidenceMsg && noEvidenceMsg.textContent.includes('No evidence discovered yet')) {
+        noEvidenceMsg.remove();
+    }
+
+    // Get current evidence count for modal ID
+    const existingEvidence = evidenceContainer.querySelectorAll('.evidence-card').length;
+    const modalId = `evidenceModal${existingEvidence + 1}`;
+
+    // Create evidence card HTML
+    const evidenceCardHTML = `
+        <div class="evidence-card card mb-2" data-bs-toggle="modal" data-bs-target="#${modalId}">
+            <div class="card-body py-2">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="mb-0">${(evidence.type || 'Unknown').charAt(0).toUpperCase() + (evidence.type || 'unknown').slice(1).replace(/_/g, ' ')}</h6>
+                        <small class="text-muted">${evidence.source || 'Unknown Source'}</small>
+                    </div>
+                    <span class="badge bg-${
+                        evidence.importance === 'critical' ? 'danger' :
+                        evidence.importance === 'high' ? 'warning' :
+                        evidence.importance === 'medium' ? 'info' : 'secondary'
+                    }">
+                        ${evidence.importance || 'unknown'}
+                    </span>
+                </div>
+            </div>
+        </div>
+    `;
+
+    // Create modal HTML
+    const modalHTML = `
+        <div class="modal fade" id="${modalId}" tabindex="-1">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">${(evidence.type || 'Unknown').charAt(0).toUpperCase() + (evidence.type || 'unknown').slice(1).replace(/_/g, ' ')} - ${evidence.source || 'Unknown Source'}</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p><strong>Description:</strong> ${evidence.description || 'No description available'}</p>
+                        <div class="bg-light p-3 rounded">
+                            <pre>${evidence.content || 'No content available'}</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+
+    // Add evidence card to container
+    evidenceContainer.insertAdjacentHTML('beforeend', evidenceCardHTML);
+
+    // Add modal to body
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+
+    // Update evidence count in header
+    const evidenceHeader = document.querySelector('.card-header.bg-success h6');
+    const newCount = existingEvidence + 1;
+    evidenceHeader.innerHTML = `<i class="fas fa-clipboard-list"></i> Evidence Discovered (${newCount})`;
+
+    // Update evidence counter in Investigation Stats section
+    const evidenceStatsCounter = document.querySelector('.row.text-center .col-4:nth-child(2) h5');
+    if (evidenceStatsCounter) {
+        evidenceStatsCounter.textContent = newCount;
+    }
+}
+
+function getHint() {
+    $.ajax({
+        url: '/api/get_hint',
+        method: 'GET',
+        success: function(response) {
+            console.log('Hint response received:', response);
+
+            if (response.success) {
+                addMessage('facilitator', 'AI Facilitator (Hint)', response.hint);
+
+                // Update hints counter using the returned count from server
+                if (response.hints_used !== undefined) {
+                    console.log('Server returned hints_used:', response.hints_used);
+
+                    // Use direct ID selector for more reliable updating
+                    const hintsCounter = document.getElementById('hints-counter');
+                    if (hintsCounter) {
+                        hintsCounter.textContent = `Hints: ${response.hints_used}`;
+                        console.log('Successfully updated hints counter to:', response.hints_used);
+                    } else {
+                        console.log('ERROR: Could not find hints-counter element');
+
+                        // Fallback to original method
+                        const sessionInfoBadges = document.querySelectorAll('.session-info .badge');
+                        sessionInfoBadges.forEach(badge => {
+                            if (badge.textContent.includes('Hints:')) {
+                                badge.textContent = `Hints: ${response.hints_used}`;
+                                console.log('Fallback: Updated hints counter to:', response.hints_used);
+                            }
+                        });
+                    }
+                } else {
+                    console.log('Server did not return hints_used, using manual increment');
+
+                    // Manual increment fallback
+                    const hintsCounter = document.getElementById('hints-counter');
+                    if (hintsCounter) {
+                        const currentHints = parseInt(hintsCounter.textContent.replace('Hints: ', '')) || 0;
+                        hintsCounter.textContent = `Hints: ${currentHints + 1}`;
+                        console.log('Manual increment: Updated hints counter to:', currentHints + 1);
+                    }
+                }
+            } else {
+                alert('Error: ' + response.error);
+            }
+        },
+        error: function() {
+            alert('Error: Could not get hint.');
+        }
+    });
+}
+
+function completeScenario() {
+    if (confirm('Are you sure you want to complete this scenario? This will end your investigation and provide final scoring.')) {
+        $.ajax({
+            url: '/api/complete_scenario',
+            method: 'POST',
+            success: function(response) {
+                if (response.success) {
+                    // Redirect to session results
+                    window.location.href = '/sessions';
+                } else {
+                    alert('Error: ' + response.error);
+                }
+            },
+            error: function() {
+                alert('Error: Could not complete scenario.');
+            }
+        });
+    }
+}
+</script>
+{% endblock %}

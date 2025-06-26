@@ -1,0 +1,314 @@
+scenario_metadata:
+  name: "CryoLock Ransomware Outbreak"
+  id: "wannacry_inspired"
+  version: "1.0"
+  description: "A fictional ransomware outbreak inspired by the WannaCry attack, featuring a wormable ransomware that spreads through SMB vulnerabilities across a hospital network."
+  difficulty: "Hard"
+  estimated_duration: "60-90 minutes"
+  category: "Ransomware"
+  scenario_type: "historical_inspired"
+  max_players: 4
+
+  inspiration:
+    attack_name: "WannaCry"
+    year: 2017
+    attribution: "Unknown (used leaked NSA tools)"
+    references:
+      - url: "https://en.wikipedia.org/wiki/WannaCry_ransomware_attack"
+        description: "WannaCry ransomware attack overview"
+
+  environment:
+    sector: "healthcare"
+    organization:
+      name: "Metro General Hospital"
+      size: "large"
+      employee_count: 3500
+      annual_revenue: "$250M - $500M"
+    infrastructure:
+      type: "hybrid"
+      primary_cloud: "Azure"
+      endpoints: 2800
+      servers: 180
+      critical_systems:
+        - name: "Electronic Health Records (EHR)"
+          description: "Patient medical records and treatment history"
+        - name: "Patient Monitoring Systems"
+          description: "Real-time patient vital signs and alerts"
+        - name: "Medical Imaging (PACS)"
+          description: "Digital medical imaging storage and viewing"
+
+attack_overview:
+  summary: "Wormable ransomware exploits unpatched SMB vulnerabilities to spread rapidly across a hospital network, encrypting critical medical systems and demanding ransom payments."
+
+  kill_chain:
+    - phase: "Initial Access"
+      description: "Exploitation of unpatched SMB vulnerability (EternalBlue)"
+      techniques: ["T1190"]
+    - phase: "Execution"
+      description: "Malware execution and self-propagation"
+      techniques: ["T1059"]
+    - phase: "Persistence"
+      description: "Registry modifications for persistence"
+      techniques: ["T1547"]
+    - phase: "Lateral Movement"
+      description: "Automated network scanning and SMB exploitation"
+      techniques: ["T1021.002"]
+    - phase: "Impact"
+      description: "File encryption across network systems"
+      techniques: ["T1486"]
+
+initial_alert:
+  timestamp: "2024-01-15 08:35:00"
+  source: "Hospital IT Security Operations Center"
+  alert_type: "critical"
+  title: "Multiple Endpoints Compromised"
+  description: "Multiple workstations and servers displaying ransomware messages. Automated network scanning detected. Critical medical systems affected."
+
+  timeline:
+    attack_start: "2024-01-15 08:28:00"
+    detection_time: "2024-01-15 08:35:00"
+    duration: "4 hours (stopped by kill switch)"
+
+  learning_objectives:
+    - "Understand how wormable ransomware spreads through network vulnerabilities"
+    - "Practice rapid incident response during a critical infrastructure attack"
+    - "Learn about SMB vulnerability exploitation and lateral movement"
+    - "Experience coordinating response during a healthcare emergency"
+    - "Understand the impact of ransomware on critical services"
+
+timeline:
+  day_0:
+    "08:28": "Initial SMB exploitation on internet-facing system"
+    "08:29": "Malware begins automated network scanning"
+    "08:30": "Rapid lateral movement via EternalBlue exploit"
+    "08:32": "First systems begin file encryption process"
+    "08:35": "Security alerts triggered - ransomware messages appear"
+    "08:45": "Critical medical systems affected"
+    "09:00": "Incident response team activated"
+    "10:30": "Network isolation measures implemented"
+    "12:45": "Kill switch domain registered by researcher"
+    "13:00": "New infections stop spreading"
+  day_1:
+    "09:00": "Recovery planning begins"
+    "11:30": "Backup integrity assessment"
+    "14:00": "Partial service restoration from clean backups"
+    "16:30": "Media briefing and public communication"
+  day_2:
+    "08:00": "Full system restoration begins"
+    "12:00": "Security patches deployed network-wide"
+    "15:00": "Services gradually brought back online"
+
+attack_chain:
+  - name: "Initial Access"
+    techniques:
+      - id: "T1190"
+        name: "Exploit Public-Facing Application"
+        description: "EternalBlue SMB vulnerability exploitation"
+    indicators:
+      - "Suspicious SMB traffic to port 445"
+      - "MS17-010 exploitation attempts"
+      - "Unusual process creation on edge systems"
+
+  - name: "Execution"
+    techniques:
+      - id: "T1059"
+        name: "Command and Scripting Interpreter"
+        description: "Malware execution and self-propagation"
+    indicators:
+      - "Automated service creation"
+      - "Malicious process execution"
+      - "System command execution"
+
+  - name: "Persistence"
+    techniques:
+      - id: "T1543.003"
+        name: "Windows Service"
+        description: "Ransomware establishes persistence via Windows services"
+    indicators:
+      - "Malicious service registration"
+      - "Registry modifications"
+      - "Task scheduler entries"
+
+  - name: "Discovery"
+    techniques:
+      - id: "T1046"
+        name: "Network Service Scanning"
+        description: "Automated network scanning for vulnerable SMB services"
+    indicators:
+      - "Rapid SMB scanning across subnets"
+      - "Port 445 connection attempts"
+      - "Network enumeration activity"
+
+  - name: "Lateral Movement"
+    techniques:
+      - id: "T1210"
+        name: "Exploitation of Remote Services"
+        description: "Automated propagation via SMB exploit"
+      - id: "T1021.002"
+        name: "SMB/Windows Admin Shares"
+        description: "SMB protocol abuse for lateral movement"
+    indicators:
+      - "EternalBlue exploit traffic"
+      - "DoublePulsar backdoor installation"
+      - "Automated service creation on remote systems"
+
+  - name: "Impact"
+    techniques:
+      - id: "T1486"
+        name: "Data Encrypted for Impact"
+        description: "Files encrypted with strong cryptography"
+      - id: "T1491.001"
+        name: "Internal Defacement"
+        description: "Ransom notes displayed and payment demanded"
+    indicators:
+      - "Mass file modifications"
+      - "Creation of .cryolocked file extensions"
+      - "Desktop wallpaper changes"
+      - "Ransom note files created"
+
+evidence:
+  items:
+    - id: "ev_001"
+      type: "file"
+      source: "Infected Workstations"
+      importance: "high"
+      description: "CryoLock ransom note"
+      content: |
+        YOUR FILES ARE ENCRYPTED!
+
+        Your important files (documents, photos, databases) have been encrypted with military-grade encryption.
+
+        To recover your files, you need to purchase the CryoLock decryption key.
+
+        Payment: 0.3 Bitcoin (approximately $8,000 USD)
+        Deadline: 72 hours from infection
+
+        Bitcoin Address: 1CryoLock7H8f2K9mN4pQ6xR3sT1uV2wX3yZ
+
+        DO NOT RENAME FILES OR USE RECOVERY SOFTWARE!
+
+    - id: "ev_002"
+      type: "network_log"
+      source: "SIEM System"
+      importance: "critical"
+      description: "SMB exploitation evidence"
+      content: |
+        2024-01-15 08:28:15 [INFO] SMB connection from 10.50.1.23 to 10.50.2.45:445
+        2024-01-15 08:28:17 [ALERT] Exploit attempt detected: MS17-010 EternalBlue
+        2024-01-15 08:28:18 [CRITICAL] SMB exploit successful on 10.50.2.45
+        2024-01-15 08:28:25 [INFO] SMB scanning detected from 10.50.2.45
+        2024-01-15 08:29:00 [CRITICAL] Mass SMB exploitation across subnet
+
+    - id: "ev_003"
+      type: "system_log"
+      source: "Windows Event Logs"
+      importance: "high"
+      description: "Suspicious process creation"
+      content: |
+        Event ID: 4688 - Process Creation
+        Time: 2024-01-15 08:28:19
+        Process: C:\Windows\System32\tasksche.exe
+        Parent Process: services.exe
+        Command Line: tasksche.exe -install
+        User: NT AUTHORITY\SYSTEM
+
+    - id: "ev_004"
+      type: "network_log"
+      source: "Network Traffic Analysis"
+      importance: "high"
+      description: "Automated network scanning"
+      content: |
+        Source: 10.50.1.23 -> Destination: 10.50.0.0/16 Port: 445
+        Scan Type: TCP SYN Scan
+        Duration: 00:02:15
+        Targets: 2,847 hosts
+        Successful: 892 hosts
+        Pattern: Worm-like propagation confirmed
+
+    - id: "ev_005"
+      type: "file_system_log"
+      source: "File Integrity Monitoring"
+      importance: "critical"
+      description: "Mass file encryption evidence"
+      content: |
+        Encryption Analysis Report:
+
+        Affected File Types:
+        - Documents: .doc, .docx, .pdf, .txt (15,847 files)
+        - Medical: .dcm, .hl7, .xml (34,567 files)
+        - Databases: .mdb, .sql, .db (2,156 files)
+
+        Total Files Affected: 62,727
+        Data Volume: 2.3 TB
+        New Extension: .cryolocked
+
+    - id: "ev_006"
+      type: "technical_analysis"
+      source: "Security Team"
+      importance: "medium"
+      description: "Kill switch domain analysis"
+      content: |
+        Kill Switch Domain: iuqerfsodp9ifjaposdfjhgosurijfaewrwergwea.com
+        Status: UNREGISTERED (now registered by researcher)
+        Purpose: Ransomware kill switch mechanism
+
+        Registration Time: 2024-01-15 12:45:00
+        Result: New infections stopped immediately
+solution:
+  attack_type: "Wormable Ransomware"
+  attack_vector: "SMB vulnerability exploitation (EternalBlue)"
+  primary_objective: "Financial gain through ransom payments"
+  secondary_objectives:
+    - "Maximize infection spread through automated propagation"
+    - "Target critical infrastructure for higher payment pressure"
+    - "Encrypt maximum number of files before detection"
+
+  key_indicators:
+    - "EternalBlue SMB vulnerability exploitation"
+    - "Wormable ransomware with automated network propagation"
+    - "Mass file encryption with .cryolocked extension"
+    - "Kill switch domain mechanism"
+    - "Bitcoin ransom payment demands"
+    - "Targeting of healthcare infrastructure"
+
+  timeline_summary: |
+    Attackers exploited the EternalBlue SMB vulnerability to deploy wormable ransomware
+    that automatically spread across the hospital network. The malware encrypted critical
+    medical systems and demanded Bitcoin payments. The attack was eventually stopped
+    when a security researcher registered the kill switch domain, preventing new infections.
+
+  business_impact: |
+    - Critical medical systems offline affecting patient care
+    - Surgery schedules disrupted and emergency services impacted
+    - Potential patient safety risks from system unavailability
+    - Regulatory compliance violations and reporting requirements
+    - Significant recovery costs and operational disruption
+
+scoring:
+  investigation_areas:
+    - "SMB vulnerability exploitation analysis"
+    - "Wormable ransomware propagation patterns"
+    - "Kill switch mechanism identification"
+    - "Healthcare system impact assessment"
+    - "Network lateral movement tracking"
+    - "File encryption scope determination"
+    - "Bitcoin payment infrastructure analysis"
+
+  critical_evidence:
+    - "ev_001"  # Ransom note
+    - "ev_002"  # SMB exploitation logs
+    - "ev_005"  # File encryption evidence
+
+  time_pressure: true
+  red_herrings:
+    - "Normal SMB file sharing traffic"
+    - "Legitimate system maintenance activities"
+    - "Standard medical equipment network communications"
+    - "Regular backup and archival processes"
+
+learning_objectives:
+  - "Understand how wormable ransomware spreads through network vulnerabilities"
+  - "Practice rapid incident response during a critical infrastructure attack"
+  - "Learn about SMB vulnerability exploitation and lateral movement"
+  - "Experience coordinating response during a healthcare emergency"
+  - "Understand the impact of ransomware on critical services"

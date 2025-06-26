@@ -1,0 +1,301 @@
+scenario_metadata:
+  name: "File Transfer Breach Cascade"
+  id: "moveit_inspired"
+  version: "1.0"
+  description: "A zero-day exploitation of a managed file transfer solution leading to widespread data theft across multiple organizations"
+  difficulty: "Medium"
+  estimated_duration: "60 minutes"
+  category: "Supply Chain"
+  scenario_type: "historical_inspired"
+  max_players: 4
+
+  inspiration:
+    attack_name: "MOVEit Transfer Zero-Day Campaign"
+    year: 2023
+    attribution: "Cl0p Ransomware Group"
+    references:
+      - url: "https://www.cisa.gov/news-events/cybersecurity-advisories/aa23-158a"
+        description: "CISA Advisory on MOVEit vulnerabilities"
+
+  environment:
+    sector: "technology"
+    organization:
+      name: "DataFlow Enterprises"
+      size: "medium"
+      employee_count: 850
+      annual_revenue: "$50M - $100M"
+    infrastructure:
+      type: "hybrid"
+      primary_cloud: "Azure"
+      endpoints: 720
+      servers: 45
+
+  timeline:
+    attack_start: "2025-06-03 14:30:00"
+    detection_time: "2025-06-03 16:45:00"
+    duration: "ongoing"
+
+  learning_objectives:
+    - "Understand zero-day vulnerability exploitation"
+    - "Learn about supply chain attack vectors"
+    - "Practice coordinating with vendors during incidents"
+    - "Experience mass data breach response procedures"
+    - "Understand third-party risk management"
+
+attack_overview:
+  summary: "Threat actors exploit a zero-day SQL injection vulnerability in a managed file transfer solution to steal sensitive data from multiple organizations using the service."
+
+  kill_chain:
+    - phase: "Reconnaissance"
+      description: "Threat actors research managed file transfer solutions and identify potential targets"
+      techniques: ["T1590", "T1596"]
+    - phase: "Initial Access"
+      description: "Zero-day SQL injection vulnerability exploited in web application"
+      techniques: ["T1190", "T1608.005"]
+    - phase: "Execution"
+      description: "Web shells deployed and SQL commands executed"
+      techniques: ["T1059.007", "T1505.003"]
+    - phase: "Persistence"
+      description: "Web shells and backdoors installed on compromised servers"
+      techniques: ["T1505.003", "T1136.001"]
+    - phase: "Defense Evasion"
+      description: "Legitimate file transfer protocols used to avoid detection"
+      techniques: ["T1036", "T1070.004"]
+    - phase: "Discovery"
+      description: "Database enumeration and file system discovery"
+      techniques: ["T1083", "T1135", "T1018"]
+    - phase: "Collection"
+      description: "Sensitive files and database contents collected"
+      techniques: ["T1005", "T1039", "T1114"]
+    - phase: "Exfiltration"
+      description: "Data stolen through compromised file transfer service"
+      techniques: ["T1041", "T1048.003"]
+
+initial_alert:
+  timestamp: "2025-06-03 16:45:12"
+  source: "Web Application Firewall (WAF)"
+  alert_type: "high"
+  title: "Multiple SQL Injection Attempts - FileShare Pro"
+  description: "Multiple SQL injection attempts detected against FileShare Pro application with reports of unauthorized file downloads and unusual database activity."
+
+timeline:
+  day_0:
+    "14:30": "Zero-day vulnerability discovery by threat actors"
+    "15:15": "First exploitation attempts against FileShare Pro instances"
+    "15:45": "SQL injection payloads refined for maximum data extraction"
+    "16:00": "Web shell deployment on compromised systems"
+    "16:30": "Mass scanning of FileShare Pro instances worldwide"
+    "16:45": "WAF alerts triggered on suspicious SQL patterns"
+  day_1:
+    "08:00": "Automated data exfiltration scripts deployed"
+    "10:30": "Client databases accessed and downloaded"
+    "12:15": "Sensitive files enumerated and catalogued"
+    "14:20": "Proof-of-concept data published on dark web"
+    "16:45": "Vendor releases emergency security bulletin"
+  day_2:
+    "09:00": "Emergency patches released by SecureTransfer Corp"
+    "11:30": "Widespread media coverage begins"
+    "13:45": "Regulatory notifications required"
+    "15:30": "Customer breach notifications initiated"
+
+attack_chain:
+  - name: "Initial Access"
+    techniques:
+      - id: "T1190"
+        name: "Exploit Public-Facing Application"
+        description: "Zero-day SQL injection in FileShare Pro web application"
+    indicators:
+      - "Unusual HTTP POST requests to /FileSharePro/api/v1/folders/"
+      - "SQL injection payloads in User-Agent headers"
+      - "Base64-encoded malicious payloads in form parameters"
+
+  - name: "Persistence"
+    techniques:
+      - id: "T1505.003"
+        name: "Web Shell"
+        description: "PHP web shell uploaded via SQL injection"
+    indicators:
+      - "Suspicious PHP files in web application directories"
+      - "Files named 'human2.aspx' and 'leonne.jsp'"
+      - "Web shell command execution via HTTP requests"
+
+  - name: "Discovery"
+    techniques:
+      - id: "T1082"
+        name: "System Information Discovery"
+        description: "System enumeration via web shell commands"
+      - id: "T1083"
+        name: "File and Directory Discovery"
+        description: "File system enumeration for sensitive data"
+    indicators:
+      - "Commands: 'whoami', 'systeminfo', 'dir' via web shell"
+      - "Database schema enumeration queries"
+      - "Directory traversal attempts in application logs"
+
+  - name: "Collection"
+    techniques:
+      - id: "T1005"
+        name: "Data from Local System"
+        description: "Automated collection of files and database contents"
+      - id: "T1213"
+        name: "Data from Information Repositories"
+        description: "Access to client file repositories"
+    indicators:
+      - "Mass SQL SELECT queries against user databases"
+      - "Large file download requests via application API"
+      - "Enumeration of file metadata and permissions"
+
+  - name: "Exfiltration"
+    techniques:
+      - id: "T1041"
+        name: "Exfiltration Over C2 Channel"
+        description: "Data theft via compromised web application"
+    indicators:
+      - "Large outbound data transfers from web servers"
+      - "Compressed archives created in temp directories"
+      - "Unusual HTTP responses with large content sizes"
+
+evidence:
+  items:
+    - id: "ev_001"
+      type: "web_log"
+      source: "IIS Access Logs"
+      importance: "critical"
+      description: "SQL injection attack pattern"
+      content: |
+        IP: 198.51.100.44
+        Request: POST /FileSharePro/api/v1/folders/
+        User-Agent: Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/113.0
+        Payload: folderName='; EXEC sp_configure 'show advanced options', 1--
+        Response: 500 Internal Server Error
+        Size: 2847 bytes
+
+    - id: "ev_002"
+      type: "file_system_log"
+      source: "File Integrity Monitoring"
+      importance: "high"
+      description: "Web shell creation"
+      content: |
+        File Created: C:\inetpub\wwwroot\FileSharePro\human2.aspx
+        Size: 1,453 bytes
+        Created By: IIS_IUSRS
+        Hash: SHA256:7c8a0d0b2c4e6f8a1b3d5e7f9a2c4d6e8f0a1b3c5d7e9f1a2b4c6d8e0f1a3b5c7d9e
+        Content Type: ASP.NET Web Shell
+
+    - id: "ev_003"
+      type: "database_log"
+      source: "SQL Server Audit"
+      importance: "critical"
+      description: "Unauthorized database access"
+      content: |
+        Event: Database Access
+        User: FileSharePro_AppUser
+        Query: SELECT TOP 1000 * FROM ClientFiles WHERE IsConfidential = 1
+        Records Returned: 847
+        Execution Time: 2025-06-03 17:23:15 UTC
+
+    - id: "ev_004"
+      type: "network_log"
+      source: "Network Traffic Analysis"
+      importance: "high"
+      description: "Data exfiltration activity"
+      content: |
+        Source: 10.0.2.100 (FileShare Pro Server)
+        Destination: 45.142.214.123
+        Protocol: HTTPS
+        Data Transfer: 2.3 GB outbound
+        Duration: 47 minutes
+        Connection Pattern: Sustained high-bandwidth transfer
+
+    - id: "ev_005"
+      type: "security_alert"
+      source: "SIEM"
+      importance: "medium"
+      description: "Anomalous application behavior"
+      content: |
+        Alert: Unusual Application Activity
+        Application: FileShare Pro
+        Anomaly: 500% increase in API calls
+        Pattern: Automated enumeration of user files
+        Time Window: 16:00 - 18:00 UTC
+        Affected Users: 1,247 accounts accessed
+
+    - id: "ev_006"
+      type: "vendor_advisory"
+      source: "SecureTransfer Corp"
+      importance: "critical"
+      description: "Official security bulletin"
+      content: |
+        CRITICAL SECURITY ADVISORY - CSA-2025-001
+        Product: FileShare Pro versions 2021.0 - 2025.1
+        Vulnerability: CVE-2025-12345 (CVSS 9.8)
+
+        Description: SQL injection vulnerability in folder management API
+        allows remote code execution and data exfiltration.
+
+        IMMEDIATE ACTION REQUIRED:
+        1. Apply emergency patch version 2025.1.1
+        2. Check for indicators of compromise
+        3. Review access logs for suspicious activity
+        4. Consider taking systems offline until patched
+
+solution:
+  attack_type: "Zero-Day Web Application Exploitation"
+  attack_vector: "SQL injection in managed file transfer application"
+  primary_objective: "Mass data theft from multiple organizations"
+  secondary_objectives:
+    - "Establish persistent access via web shells"
+    - "Maximize data collection before discovery"
+    - "Target high-value organizations using the platform"
+
+  key_indicators:
+    - "Zero-day SQL injection vulnerability exploitation"
+    - "Web shell deployment for persistence"
+    - "Mass data enumeration and exfiltration"
+    - "Targeting of managed service provider"
+    - "Supply chain impact affecting multiple organizations"
+    - "Coordinated global exploitation campaign"
+
+  timeline_summary: |
+    Attackers discovered and exploited a zero-day SQL injection vulnerability in the
+    FileShare Pro application. They deployed web shells for persistence, then conducted
+    mass data exfiltration across hundreds of organizations using the platform. The
+    attack demonstrates the high impact of supply chain vulnerabilities affecting
+    managed service providers.
+
+  business_impact: |
+    - Confidential client data compromised across multiple organizations
+    - Regulatory compliance violations requiring breach notifications
+    - Loss of customer trust in managed file transfer services
+    - Potential legal liability for data protection failures
+    - Business disruption during incident response and remediation
+
+scoring:
+  investigation_areas:
+    - "Zero-day vulnerability analysis"
+    - "Web application attack pattern recognition"
+    - "Supply chain impact assessment"
+    - "Data exfiltration scope determination"
+    - "Web shell detection and analysis"
+    - "Database compromise investigation"
+    - "Vendor communication and coordination"
+
+  critical_evidence:
+    - "ev_001"  # SQL injection attack
+    - "ev_002"  # Web shell creation
+    - "ev_006"  # Vendor advisory
+
+  time_pressure: false
+  red_herrings:
+    - "Legitimate file transfer activities"
+    - "Normal application maintenance operations"
+    - "Routine database backup processes"
+    - "Standard user authentication events"
+
+learning_objectives:
+  - "Recognize zero-day exploitation patterns"
+  - "Understand web application security vulnerabilities"
+  - "Assess supply chain attack impacts"
+  - "Practice vendor coordination during incidents"
+  - "Understand managed service provider risks"
+  - "Learn data breach notification requirements"

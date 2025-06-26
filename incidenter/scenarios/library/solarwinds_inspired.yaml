@@ -1,0 +1,490 @@
+scenario_metadata:
+  name: "Solar Storm Supply Chain Compromise"
+  id: "solarwinds_inspired"
+  version: "1.0"
+  description: "Investigate a sophisticated supply chain attack through compromised software updates, inspired by the SolarWinds Orion breach"
+  difficulty: "Hard"
+  estimated_duration: "60-90 minutes"
+  category: "Supply Chain"
+  scenario_type: "historical_inspired"
+  max_players: 4
+
+  inspiration:
+    attack_name: "SolarWinds Orion Supply Chain Attack"
+    year: 2020
+    attribution: "APT29 (Cozy Bear) / SVR"
+    references:
+      - url: "https://www.cisa.gov/news-events/cybersecurity-advisories/aa20-352a"
+        description: "CISA Alert on SolarWinds Orion compromise"
+
+  environment:
+    sector: "technology"
+    organization:
+      name: "TechCorp Industries"
+      size: "large"
+      employee_count: 2500
+      annual_revenue: "$500M - $1B"
+    infrastructure:
+      type: "hybrid"
+      primary_cloud: "AWS"
+      endpoints: 2200
+      servers: 180
+
+  timeline:
+    attack_start: "2025-01-28 09:00:00"
+    detection_time: "2025-02-05 07:30:00"
+    duration: "ongoing"
+
+  learning_objectives:
+    - "Understand supply chain attack vectors and software compromise"
+    - "Learn about nation-state APT tactics and techniques"
+    - "Practice long-term persistent threat investigation"
+    - "Experience software vendor coordination during incidents"
+    - "Understand the scope and impact of supply chain breaches"
+
+attack_overview:
+  summary: "Nation-state actors compromised a popular network management software's build pipeline to distribute malicious updates, enabling widespread access to target organizations."
+
+  kill_chain:
+    - phase: "Reconnaissance"
+      description: "Extensive reconnaissance of software supply chain targets and build environments"
+      techniques: ["T1590", "T1596", "T1589"]
+    - phase: "Resource Development"
+      description: "Infrastructure setup and malicious code development for supply chain compromise"
+      techniques: ["T1583", "T1588", "T1587"]
+    - phase: "Initial Access"
+      description: "Compromise of software vendor's build pipeline and code signing infrastructure"
+      techniques: ["T1195.002", "T1190"]
+    - phase: "Execution"
+      description: "Malicious code executed through legitimate software updates"
+      techniques: ["T1559", "T1053.005"]
+    - phase: "Persistence"
+      description: "Backdoors installed through legitimate software installation processes"
+      techniques: ["T1543.003", "T1574.002"]
+    - phase: "Defense Evasion"
+      description: "Legitimate software certificates and processes used to avoid detection"
+      techniques: ["T1553.002", "T1036.005"]
+    - phase: "Discovery"
+      description: "Network and system reconnaissance across multiple victim organizations"
+      techniques: ["T1083", "T1018", "T1087"]
+    - phase: "Collection"
+      description: "Sensitive data and credentials collected from compromised environments"
+      techniques: ["T1005", "T1560", "T1114"]
+    - phase: "Command and Control"
+      description: "Long-term persistent communication with compromised systems"
+      techniques: ["T1071.001", "T1573.002"]
+    - phase: "Exfiltration"
+      description: "Stolen data transmitted through encrypted channels"
+      techniques: ["T1041", "T1048.003"]
+
+initial_alert:
+  timestamp: "2025-02-05 07:30:00"
+  source: "SOC Analyst"
+  alert_type: "medium"
+  title: "Unusual Outbound Traffic from NetMonitor Servers"
+  description: "SOC analyst noticed unusual outbound traffic patterns from systems running NetMonitor Pro network management software, potentially indicating compromise."
+
+timeline:
+  day_0:
+    "09:00": "Initial compromise of NetMonitor Pro build environment"
+    "11:30": "Malicious code injected into software update pipeline"
+    "14:15": "Compromised NetMonitor Pro 2024.1.1 released to customers"
+    "16:45": "First installations of compromised software begin"
+  day_1:
+    "08:30": "Widespread deployment of malicious update continues"
+    "12:00": "Backdoor code remains dormant in infected systems"
+    "15:20": "Additional organizations install compromised software"
+  day_7:
+    "10:00": "C2 infrastructure activated after dormancy period"
+    "11:15": "Initial network reconnaissance begins"
+    "13:30": "Credential harvesting operations commence"
+  day_8:
+    "07:30": "SOC analyst detects unusual outbound traffic patterns"
+    "09:15": "Investigation into suspicious NetMonitor behavior begins"
+    "11:00": "Supply chain compromise confirmed"
+    "14:30": "Incident response team activated"
+    "16:45": "Network containment measures implemented"
+  day_9:
+    "08:00": "Forensic analysis of compromised systems begins"
+    "12:30": "IOC correlation with threat intelligence feeds"
+    "15:45": "APT29 attribution confirmed with high confidence"
+
+attack_chain:
+  - name: "Initial Access"
+    techniques:
+      - id: "T1195.002"
+        name: "Compromise Software Supply Chain"
+        description: "Malicious code inserted into NetMonitor Pro software update"
+    indicators:
+      - "NetMonitor Pro version 2024.1.1 contains unauthorized code modifications"
+      - "Digital signatures valid but code hash mismatches with known good versions"
+      - "Build timestamp anomalies in compromised software version"
+
+  - name: "Execution"
+    techniques:
+      - id: "T1053.005"
+        name: "Scheduled Task/Job: Scheduled Task"
+        description: "Malicious scheduled task created during software installation"
+      - id: "T1574.002"
+        name: "Hijack Execution Flow: DLL Side-Loading"
+        description: "Malicious DLL loaded alongside legitimate NetMonitor components"
+    indicators:
+      - "Scheduled task 'NetMonitorUpdate' created with suspicious parameters"
+      - "Unsigned DLL 'netmon_helper.dll' loaded by NetMonitor process"
+      - "Process injection into legitimate NetMonitor service"
+
+  - name: "Persistence"
+    techniques:
+      - id: "T1543.003"
+        name: "Create or Modify System Process: Windows Service"
+        description: "Malicious service registered for persistence"
+      - id: "T1546.003"
+        name: "Event Triggered Execution: WMI Event Subscription"
+        description: "WMI event subscription for covert execution"
+    indicators:
+      - "Service 'NetMonitor Telemetry Service' created with malicious binary"
+      - "WMI event subscription '__EventFilter' with encoded PowerShell"
+      - "Registry modifications in NetMonitor configuration keys"
+
+  - name: "Defense Evasion"
+    techniques:
+      - id: "T1027.002"
+        name: "Obfuscated Files or Information: Software Packing"
+        description: "Malicious payload obfuscated using custom packer"
+      - id: "T1036.005"
+        name: "Masquerading: Match Legitimate Name or Location"
+        description: "Malicious files masquerading as legitimate NetMonitor components"
+    indicators:
+      - "Entropy analysis reveals packed/encrypted sections in binaries"
+      - "File version information spoofed to match legitimate NetMonitor files"
+      - "Code signing certificate abuse with valid but suspicious issuer"
+
+  - name: "Credential Access"
+    techniques:
+      - id: "T1003.001"
+        name: "OS Credential Dumping: LSASS Memory"
+        description: "LSASS memory dumped for credential extraction"
+      - id: "T1558.003"
+        name: "Steal or Forge Kerberos Tickets: Kerberoasting"
+        description: "Service account credentials targeted via Kerberoasting"
+    indicators:
+      - "Unusual access to LSASS process memory"
+      - "Kerberos TGS requests for high-privilege service accounts"
+      - "Mimikatz-like behavior in memory dump analysis"
+
+  - name: "Discovery"
+    techniques:
+      - id: "T1083"
+        name: "File and Directory Discovery"
+        description: "Automated discovery of sensitive files and directories"
+      - id: "T1087.002"
+        name: "Account Discovery: Domain Account"
+        description: "Active Directory enumeration for privilege escalation targets"
+    indicators:
+      - "PowerShell commands enumerating file shares and directories"
+      - "LDAP queries targeting privileged domain accounts"
+      - "Network scanning from compromised NetMonitor servers"
+
+  - name: "Lateral Movement"
+    techniques:
+      - id: "T1021.001"
+        name: "Remote Services: Remote Desktop Protocol"
+        description: "RDP used for lateral movement with stolen credentials"
+      - id: "T1550.002"
+        name: "Use Alternate Authentication Material: Pass the Hash"
+        description: "Pass-the-hash attacks using extracted credentials"
+    indicators:
+      - "RDP connections from NetMonitor servers to domain controllers"
+      - "NTLM authentication with suspicious hash patterns"
+      - "Lateral movement to high-value systems via compromised accounts"
+
+  - name: "Collection"
+    techniques:
+      - id: "T1005"
+        name: "Data from Local System"
+        description: "Sensitive files collected from compromised systems"
+      - id: "T1039"
+        name: "Data from Network Shared Drive"
+        description: "Data harvested from accessible network shares"
+    indicators:
+      - "Large file access patterns from sensitive directories"
+      - "Network share enumeration and file collection activities"
+      - "Archive creation with suspicious naming patterns"
+
+  - name: "Command and Control"
+    techniques:
+      - id: "T1071.001"
+        name: "Application Layer Protocol: Web Protocols"
+        description: "HTTPS-based C2 communication disguised as legitimate traffic"
+      - id: "T1568.002"
+        name: "Dynamic Resolution: Domain Generation Algorithms"
+        description: "DGA-based domain resolution for C2 infrastructure"
+    indicators:
+      - "Periodic HTTPS requests to suspicious domains"
+      - "DNS queries to algorithmically generated domain names"
+      - "C2 traffic mimicking legitimate NetMonitor telemetry"
+
+  - name: "Exfiltration"
+    techniques:
+      - id: "T1041"
+        name: "Exfiltration Over C2 Channel"
+        description: "Data exfiltrated through established command and control channels"
+      - id: "T1567.002"
+        name: "Exfiltration Over Web Service: Exfiltration to Cloud Storage"
+        description: "Stolen data uploaded to compromised cloud storage accounts"
+    indicators:
+      - "Large data transfers over C2 channels"
+      - "Upload activities to suspicious cloud storage providers"
+      - "Encrypted data streams with high entropy values"
+
+evidence:
+  items:
+    - id: "ev_001"
+      type: "network_log"
+      source: "Firewall Logs"
+      importance: "critical"
+      description: "Suspicious outbound HTTPS traffic from NetMonitor servers"
+      content: |
+        Time: 2024-01-15 07:32:15
+        Source: 10.10.50.15 (netmonitor-srv-01)
+        Destination: 185.199.108.153:443
+        Protocol: HTTPS
+        Bytes: 2,847,392
+        Duration: 45 seconds
+
+        Time: 2024-01-15 07:35:22
+        Source: 10.10.50.16 (netmonitor-srv-02)
+        Destination: 185.199.108.153:443
+        Protocol: HTTPS
+        Bytes: 3,128,576
+        Duration: 52 seconds
+
+    - id: "ev_002"
+      type: "system_log"
+      source: "Windows Event Log"
+      importance: "high"
+      description: "Scheduled task creation during NetMonitor update"
+      content: |
+        Event ID: 4698
+        Time: 2024-01-08 09:47:33
+        Computer: netmonitor-srv-01
+        Security ID: SYSTEM
+        Account Name: netmonitor-srv-01$
+
+        Task Name: \NetMonitorUpdate
+        Task Content: <?xml version="1.0" encoding="UTF-16"?>
+        <Task xmlns="http://schemas.microsoft.com/windows/2004/02/mit/task">
+          <Actions>
+            <Exec>
+              <Command>C:\Program Files\NetMonitor\bin\nm_updater.exe</Command>
+              <Arguments>-config c:\temp\nm_config.dat -silent</Arguments>
+            </Exec>
+          </Actions>
+        </Task>
+
+    - id: "ev_003"
+      type: "file_analysis"
+      source: "Digital Forensics"
+      importance: "critical"
+      description: "Hash analysis of NetMonitor Pro installation files"
+      content: |
+        File: NetMonitorPro_2024.1.1_Setup.exe
+        Size: 45,892,116 bytes
+        MD5: 7c8f4b2a9e1d3f5a8b6c2d4e7f9a1b3c
+        SHA256: a1b2c3d4e5f6789012345678901234567890123456789012345678901234567890
+
+        VirusTotal Results: 3/67 engines detected as malicious
+
+        File: nm_updater.exe (extracted from installer)
+        Size: 1,847,296 bytes
+        MD5: 3f8a2b1c5d4e7f9a8b6c2d1e4f7a9b2c
+        SHA256: b2c3d4e5f67890123456789012345678901234567890123456789012345678901
+
+        Code Signing: Valid (NetMonitor Technologies LLC)
+        Certificate Issued: 2024-01-02 (Recent issuance - suspicious)
+
+    - id: "ev_004"
+      type: "process_log"
+      source: "EDR Telemetry"
+      importance: "high"
+      description: "Suspicious process execution and injection activity"
+      content: |
+        Process: NetMonitor.exe
+        PID: 2847
+        Parent PID: 1284 (services.exe)
+        Command Line: "C:\Program Files\NetMonitor\NetMonitor.exe" -service
+
+        Child Process Created:
+        Process: cmd.exe
+        PID: 3951
+        Command Line: cmd.exe /c powershell.exe -enc WwBTAHkAcwB0AGUAbQAuAE4AZQB0AC4AUwBlAHI...
+
+        Memory Injection Detected:
+        Source Process: nm_updater.exe (PID: 3427)
+        Target Process: svchost.exe (PID: 1892)
+        Injection Type: Process Hollowing
+
+    - id: "ev_005"
+      type: "dns_log"
+      source: "DNS Server Logs"
+      importance: "medium"
+      description: "Suspicious DNS queries indicating domain generation algorithm"
+      content: |
+        Time: 2024-01-13 14:23:18
+        Client: 10.10.50.15
+        Query: xj7dk9mp2n.com
+        Response: NXDOMAIN
+
+        Time: 2024-01-13 14:23:45
+        Client: 10.10.50.15
+        Query: k8nm4qr7x2.net
+        Response: NXDOMAIN
+
+        Time: 2024-01-13 14:24:12
+        Client: 10.10.50.15
+        Query: w3gh5jk8mp.org
+        Response: 185.199.108.153
+
+        Pattern Analysis: Domain names follow algorithmic pattern
+        Generated every 27 seconds, rotating through TLDs
+
+    - id: "ev_006"
+      type: "registry_log"
+      source: "Registry Monitor"
+      importance: "medium"
+      description: "Registry modifications for persistence and configuration"
+      content: |
+        Time: 2024-01-08 09:48:15
+        Action: KEY_CREATED
+        Key: HKLM\SOFTWARE\NetMonitor\TelemetryService
+        Value: ServiceBinary = "C:\Windows\System32\nm_telemetry.dll"
+
+        Time: 2024-01-08 09:48:22
+        Action: VALUE_SET
+        Key: HKLM\SYSTEM\CurrentControlSet\Services\NetMonitorTelemetry
+        Value: Start = 2 (Automatic)
+
+        Time: 2024-01-08 09:48:35
+        Action: VALUE_SET
+        Key: HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Run
+        Value: NetMonitorHelper = "C:\Program Files\NetMonitor\bin\nm_helper.exe -background"
+
+    - id: "ev_007"
+      type: "memory_dump"
+      source: "Memory Analysis"
+      importance: "high"
+      description: "Malicious code analysis from process memory dump"
+      content: |
+        Process: NetMonitor.exe (PID: 2847)
+        Dump Size: 147 MB
+        Analysis Time: 2024-01-15 09:15:00
+
+        Suspicious Artifacts Found:
+        - Encrypted configuration blob at offset 0x7FFE0000
+        - C2 domain list in plaintext: ["w3gh5jk8mp.org", "backup-c2.example.com"]
+        - AES-256 encryption keys for data exfiltration
+        - PowerShell commands for credential harvesting
+
+        Malware Family: Custom backdoor with nation-state TTPs
+        Similarities to SUNBURST/SOLORIGATE campaign detected
+
+    - id: "ev_008"
+      type: "threat_intel"
+      source: "Threat Intelligence Feed"
+      importance: "critical"
+      description: "IOC matches for known nation-state campaign"
+      content: |
+        Alert: High-confidence IOC match detected
+        Campaign: SOLAR STORM (APT29/Cozy Bear attributed)
+
+        Matched Indicators:
+        - C2 Domain: w3gh5jk8mp.org (First seen: 2024-01-10)
+        - File Hash: a1b2c3d4e5f6789012345678901234567890123456789012345678901234567890
+        - Certificate Serial: 33:00:01:C3:8E:5D:89:7A:D9:12:45:67:89:AB:CD:EF
+
+        Attribution Confidence: HIGH (85%)
+        Associated TTPs match known APT29 operations
+        Supply chain targeting consistent with historical campaigns
+
+    - id: "ev_009"
+      type: "email_log"
+      source: "Email Security Gateway"
+      importance: "low"
+      description: "Spear phishing attempt against IT administrator"
+      content: |
+        Time: 2024-01-07 16:23:45
+        From: security-update@netmonitor-tech.com
+        To: admin@company.com
+        Subject: Critical Security Update - NetMonitor Pro 2024.1.1
+
+        Message Body:
+        "Dear NetMonitor Administrator,
+
+        A critical security vulnerability has been identified in NetMonitor Pro.
+        Please download and install version 2024.1.1 immediately.
+
+        Download: https://updates.netmonitor-tech.com/2024.1.1/setup.exe
+
+        This update addresses CVE-2024-0187 and must be installed within 48 hours.
+
+        NetMonitor Security Team"
+
+        Analysis: Domain netmonitor-tech.com is typosquatting legitimate domain
+
+solution:
+  attack_type: "Supply Chain Attack"
+  attack_vector: "Compromised software update distribution"
+  primary_objective: "Long-term persistent access for intelligence collection"
+  secondary_objectives:
+    - "Credential harvesting and lateral movement"
+    - "Data exfiltration from high-value targets"
+    - "Maintain covert access across multiple organizations"
+
+  key_indicators:
+    - "Supply chain compromise through software update mechanism"
+    - "Nation-state level sophistication with multi-stage payload deployment"
+    - "Legitimate code signing certificates abused for initial trust"
+    - "Domain generation algorithm used for resilient C2 communications"
+    - "Credential harvesting and lateral movement to high-value systems"
+
+  timeline_summary: |
+    A sophisticated nation-state actor (APT29/Cozy Bear) compromised the NetMonitor Pro
+    software supply chain, inserting malicious code into version 2024.1.1. The malware
+    remained dormant for several days before activating its C2 infrastructure and beginning
+    reconnaissance and data exfiltration operations across multiple victim organizations.
+
+  business_impact: |
+    - Compromise of sensitive intellectual property and customer data
+    - Potential regulatory violations and legal liability
+    - Loss of customer trust and competitive advantage
+    - Significant incident response and recovery costs
+    - Long-term reputation damage and business disruption
+
+scoring:
+  investigation_areas:
+    - "Supply chain compromise identification"
+    - "Nation-state attribution analysis"
+    - "Software integrity verification"
+    - "Network traffic pattern analysis"
+    - "Memory forensics and malware analysis"
+    - "Credential compromise assessment"
+    - "Data exfiltration scope determination"
+
+  critical_evidence:
+    - "ev_001"  # Suspicious outbound traffic
+    - "ev_003"  # Compromised software analysis
+    - "ev_008"  # Threat intelligence correlation
+
+  time_pressure: false
+  red_herrings:
+    - "Legitimate NetMonitor telemetry traffic"
+    - "Normal software update processes"
+    - "Standard administrative activities"
+    - "Routine network monitoring operations"
+
+learning_objectives:
+  - "Understand supply chain attack vectors and software compromise"
+  - "Learn about nation-state APT tactics and techniques"
+  - "Practice long-term persistent threat investigation"
+  - "Experience software vendor coordination during incidents"
+  - "Understand the scope and impact of supply chain breaches"

@@ -1,0 +1,324 @@
+scenario_metadata:
+  name: "Corporate Network Apocalypse"
+  id: "notpetya_inspired"
+  version: "1.0"
+  description: "A devastating wiper malware outbreak that spreads rapidly through corporate networks using lateral movement techniques"
+  difficulty: "Hard"
+  estimated_duration: "80 minutes"
+  category: "Destructive Malware"
+  scenario_type: "historical_inspired"
+  max_players: 4
+
+  inspiration:
+    attack_name: "NotPetya/ExPetr Wiper Campaign"
+    year: 2017
+    attribution: "Sandworm Team (GRU Unit 74455)"
+    references:
+      - url: "https://www.us-cert.gov/ncas/alerts/TA17-181A"
+        description: "US-CERT Alert on Petya/NotPetya ransomware"
+
+  environment:
+    sector: "technology"
+    organization:
+      name: "GlobalTech Corporation"
+      size: "large"
+      employee_count: 4500
+      annual_revenue: "$1B+"
+    infrastructure:
+      type: "hybrid"
+      primary_cloud: "Azure"
+      endpoints: 3800
+      servers: 220
+
+  timeline:
+    attack_start: "2025-06-03 09:30:00"
+    detection_time: "2025-06-03 11:47:00"
+    duration: "ongoing"
+
+  learning_objectives:
+    - "Understand destructive malware vs traditional ransomware"
+    - "Learn about lateral movement through Windows networks"
+    - "Practice response to nation-state destructive attacks"
+    - "Experience business continuity during catastrophic incidents"
+    - "Understand wiper malware attribution and geopolitical context"
+
+attack_overview:
+  summary: "Nation-state actors deploy destructive wiper malware disguised as ransomware, spreading rapidly through corporate networks using multiple propagation methods to cause maximum damage."
+
+  kill_chain:
+    - phase: "Reconnaissance"
+      description: "Intelligence gathering on target networks and propagation vectors"
+      techniques: ["T1590", "T1596"]
+    - phase: "Resource Development"
+      description: "Development of wiper malware with multiple spreading mechanisms"
+      techniques: ["T1587.001", "T1588.001"]
+    - phase: "Initial Access"
+      description: "Supply chain compromise and direct network infiltration"
+      techniques: ["T1195.002", "T1078"]
+    - phase: "Execution"
+      description: "Malware deployment using multiple execution methods"
+      techniques: ["T1059.001", "T1059.003", "T1053.005"]
+    - phase: "Persistence"
+      description: "System modifications to maintain access during destruction"
+      techniques: ["T1547.001", "T1543.003"]
+    - phase: "Defense Evasion"
+      description: "Ransomware facade to disguise destructive intent"
+      techniques: ["T1036.004", "T1070.004"]
+    - phase: "Discovery"
+      description: "Network mapping and credential harvesting for propagation"
+      techniques: ["T1018", "T1083", "T1003.001"]
+    - phase: "Lateral Movement"
+      description: "Rapid spread using multiple Windows networking protocols"
+      techniques: ["T1021.002", "T1021.001", "T1550.002"]
+    - phase: "Impact"
+      description: "Systematic destruction of data and system functionality"
+      techniques: ["T1485", "T1486", "T1489"]
+
+initial_alert:
+  timestamp: "2025-06-03 11:47:23"
+  source: "Multiple EDR Systems"
+  alert_type: "critical"
+  title: "Massive Malware Outbreak - Systems Being Destroyed"
+  description: "400+ systems affected across 15 locations with ransom messages appearing, but systems appear to be completely wiped rather than just encrypted."
+
+timeline:
+  day_0:
+    "09:30": "Initial infection via compromised software update"
+    "09:35": "Malware begins local encryption and network scanning"
+    "09:40": "Lateral movement via SMB vulnerability (EternalBlue)"
+    "09:47": "First EDR alerts triggered across multiple systems"
+    "09:50": "Worm component spreads to adjacent network segments"
+    "10:15": "Domain controller infection begins"
+    "10:30": "Network shares and file servers targeted"
+    "10:45": "Backup systems accessed and destroyed"
+    "10:55": "International offices report similar incidents"
+    "11:20": "Master Boot Record (MBR) overwriting detected"
+    "11:35": "Recovery impossible - true wiper behavior confirmed"
+    "11:47": "Massive outbreak detected - systems being destroyed"
+    "11:50": "Network infrastructure devices affected"
+    "12:10": "Business operations completely halted"
+    "12:25": "Emergency incident response team activated"
+    "12:40": "Network segmentation efforts begin"
+  day_1:
+    "08:00": "Damage assessment begins"
+    "10:30": "Clean system inventory completed"
+    "13:45": "Business continuity plans activated"
+    "16:30": "Recovery operations planning phase"
+  day_2:
+    "09:00": "Rebuilding critical systems from clean backups"
+    "14:00": "Limited operations restoration begins"
+
+attack_chain:
+  - name: "Initial Access"
+    techniques:
+      - id: "T1195.002"
+        name: "Compromise Software Supply Chain"
+        description: "Malicious update delivered through legitimate software"
+    indicators:
+      - "Compromised accounting software update"
+      - "Digital signature validation bypass"
+      - "Automatic update mechanism exploitation"
+
+  - name: "Execution"
+    techniques:
+      - id: "T1559.001"
+        name: "Component Object Model"
+        description: "COM object abuse for malware execution"
+    indicators:
+      - "Rundll32.exe executing malicious DLL"
+      - "Service creation for malware persistence"
+      - "Process injection into legitimate processes"
+
+  - name: "Discovery"
+    techniques:
+      - id: "T1018"
+        name: "Remote System Discovery"
+        description: "Network reconnaissance for spread targets"
+      - id: "T1135"
+        name: "Network Share Discovery"
+        description: "Enumeration of accessible network shares"
+    indicators:
+      - "ARP table enumeration"
+      - "SMB share enumeration via net commands"
+      - "Active Directory computer object queries"
+
+  - name: "Lateral Movement"
+    techniques:
+      - id: "T1210"
+        name: "Exploitation of Remote Services"
+        description: "EternalBlue exploit for SMB vulnerability"
+      - id: "T1021.002"
+        name: "SMB/Windows Admin Shares"
+        description: "Administrative share abuse for propagation"
+    indicators:
+      - "MS17-010 SMB vulnerability exploitation"
+      - "PSEXEC-style remote execution"
+      - "Admin$ and C$ share access attempts"
+
+  - name: "Credential Access"
+    techniques:
+      - id: "T1003.001"
+        name: "LSASS Memory"
+        description: "Credential extraction using Mimikatz"
+      - id: "T1552.001"
+        name: "Credentials In Files"
+        description: "Search for stored credentials"
+    indicators:
+      - "LSASS process memory access"
+      - "Credential dumping tools execution"
+      - "Registry credential store access"
+
+  - name: "Impact"
+    techniques:
+      - id: "T1486"
+        name: "Data Encrypted for Impact"
+        description: "File encryption with false ransom demand"
+      - id: "T1561.002"
+        name: "Disk Structure Wipe"
+        description: "Master Boot Record destruction"
+      - id: "T1529"
+        name: "System Shutdown/Reboot"
+        description: "Forced system restart after infection"
+    indicators:
+      - "File encryption using AES-256"
+      - "MBR overwrite with random data"
+      - "Forced system reboot after encryption"
+      - "Fake ransom note deployment"
+
+evidence:
+  items:
+    - id: "ev_001"
+      type: "process_log"
+      source: "Windows Event Log 4688"
+      importance: "critical"
+      description: "Initial malware execution"
+      content: |
+        Process Name: C:\Windows\System32\rundll32.exe
+        Command Line: rundll32.exe C:\Windows\perfc.dat,#1
+        User: SYSTEM
+        Process ID: 1847
+        Parent: services.exe (764)
+
+    - id: "ev_002"
+      type: "network_log"
+      source: "Network Monitoring"
+      importance: "high"
+      description: "SMB exploitation attempts"
+      content: |
+        Source: 10.0.1.50
+        Destination: 10.0.1.51-10.0.1.100
+        Protocol: SMB
+        Activity: MS17-010 EternalBlue exploit pattern
+        Payload Size: 1024 bytes
+
+    - id: "ev_003"
+      type: "file_system_log"
+      source: "File Integrity Monitoring"
+      importance: "critical"
+      description: "Mass file encryption event"
+      content: |
+        Event: Mass file modification detected
+        Location: C:\Users\*, D:\SharedData\*
+        File Pattern: *.WANNACRY extension added
+        Modified Files: 15,847 files in 2 minutes
+
+    - id: "ev_004"
+      type: "security_alert"
+      source: "Endpoint Detection"
+      importance: "critical"
+      description: "MBR modification detected"
+      content: |
+        Alert: Master Boot Record modification
+        Device: \\.\PhysicalDrive0
+        Process: rundll32.exe (PID: 1847)
+        Action: Raw disk write to sector 0
+        Data: Random/encrypted overwrite pattern
+
+    - id: "ev_005"
+      type: "memory_dump"
+      source: "Memory Analysis"
+      importance: "high"
+      description: "Malware memory artifacts"
+      content: |
+        Injected Process: explorer.exe
+        Injected Code: Mimikatz credential extraction
+        Network Scanner: Active port 445 scanning
+        Encryption Module: AES-256 file encryption routine
+
+    - id: "ev_006"
+      type: "file"
+      source: "File System"
+      importance: "medium"
+      description: "Ransom message content"
+      content: |
+        File: @Please_Read_Me.txt
+        Content:
+        "Your important files are encrypted.
+        Your documents, photos, databases and other important files
+        have been encrypted with strongest encryption.
+
+        To decrypt files you need to buy special software.
+        Send $300 worth of Bitcoin to: [BITCOIN_ADDRESS]
+
+        WARNING: Do not turn off your computer or you will lose all data!"
+
+solution:
+  attack_type: "Destructive Wiper Malware (False Ransomware)"
+  attack_vector: "Supply chain compromise via malicious software update"
+  primary_objective: "Maximum data destruction and business disruption"
+  secondary_objectives:
+    - "Network infrastructure damage"
+    - "Backup system destruction"
+    - "Cross-border impact maximization"
+
+  key_indicators:
+    - "Supply chain compromise through software update"
+    - "EternalBlue exploit for lateral movement"
+    - "Mass file encryption with unrecoverable keys"
+    - "Master Boot Record destruction"
+    - "Worm-like propagation behavior"
+    - "False ransom demand (payment does not restore data)"
+
+  timeline_summary: |
+    The attack began with a compromised software update that delivered the wiper malware.
+    Within minutes, the malware began rapid lateral movement using the EternalBlue exploit,
+    simultaneously encrypting files and destroying boot records. The attack was designed
+    for maximum destruction rather than financial gain, with the ransom message being
+    a false flag to disguise the true destructive intent.
+
+  business_impact: |
+    - Complete business operations shutdown across all locations
+    - Irreversible data loss due to wiper functionality
+    - Major financial losses from extended downtime
+    - Supply chain disruption affecting partners and customers
+    - Reputation damage and loss of customer confidence
+
+scoring:
+  investigation_areas:
+    - "Supply chain compromise identification"
+    - "Lateral movement mechanism analysis"
+    - "Wiper vs ransomware distinction"
+    - "Network propagation assessment"
+    - "Business impact evaluation"
+    - "Recovery possibility analysis"
+    - "Attribution and motive assessment"
+
+  critical_evidence:
+    - "ev_001"  # Initial execution
+    - "ev_003"  # Mass encryption
+    - "ev_004"  # MBR destruction
+
+  time_pressure: true
+  red_herrings:
+    - "Legitimate software update processes"
+    - "Normal file backup operations"
+    - "Routine SMB network traffic"
+    - "Standard system maintenance activities"
+
+learning_objectives:
+  - "Distinguish between ransomware and wiper malware"
+  - "Understand supply chain attack vectors"
+  - "Recognize EternalBlue exploitation patterns"
+  - "Assess business continuity impact"
+  - "Practice rapid incident containment"
+  - "Understand nation-state attack motivations"

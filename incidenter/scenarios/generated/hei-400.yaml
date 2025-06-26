@@ -1,0 +1,609 @@
+attack_overview:
+  kill_chain:
+  - description: Adversaries may send spearphishing emails with a malicious attachment
+    phase: Initial Access
+    techniques:
+    - T1566.001
+  - description: MITRE ATT&CK technique T1086
+    phase: Execution
+    techniques:
+    - T1086
+  - description: MITRE ATT&CK technique T1136.003
+    phase: Persistence
+    techniques:
+    - T1136.003
+  - description: MITRE ATT&CK technique T1027
+    phase: Defense Evasion
+    techniques:
+    - T1027
+  - description: Adversaries may attempt to access credential material stored in LSASS
+      memory
+    phase: Credential Access
+    techniques:
+    - T1003.001
+  - description: MITRE ATT&CK technique T1016
+    phase: Discovery
+    techniques:
+    - T1016
+  - description: MITRE ATT&CK technique T1021.002
+    phase: Lateral Movement
+    techniques:
+    - T1021.002
+  - description: MITRE ATT&CK technique T1039
+    phase: Collection
+    techniques:
+    - T1039
+  - description: MITRE ATT&CK technique T1020
+    phase: Exfiltration
+    techniques:
+    - T1020
+  summary: A cybersecurity incident targeting HealthCare Partners, involving multiple
+    attack techniques and requiring thorough investigation.
+evidence:
+  items:
+  - content: 'Suspicious behavior detected: Unusual network activity pattern detected'
+    description: Evidence related to Initial Access phase
+    id: e3ea6f59
+    importance: high
+    metadata:
+      generated: true
+      technique_name: Phishing
+    related_techniques:
+    - T1566.001
+    reliability: medium
+    source: Endpoint Detection and Response
+    tags:
+    - security-alert
+    - alert
+    - detection
+    timestamp: '2025-06-24T17:56:06.322851'
+    type: security_alert
+  - content: 'Suspicious behavior detected: Unusual network activity pattern detected'
+    description: Evidence related to Initial Access phase
+    id: 2b9e1454
+    importance: high
+    metadata:
+      generated: true
+      technique_name: Phishing
+    related_techniques:
+    - T1566.001
+    reliability: high
+    source: Endpoint Detection and Response
+    tags:
+    - security-alert
+    - alert
+    - detection
+    timestamp: '2025-06-24T17:46:06.322851'
+    type: security_alert
+  - content: 'Malware detected: Trojan.Win32.Beacon in file /var/tmp/payload'
+    description: Evidence related to Initial Access phase
+    id: 1789f09f
+    importance: high
+    metadata:
+      generated: true
+      technique_name: Phishing
+    related_techniques:
+    - T1566.001
+    reliability: high
+    source: Endpoint Detection and Response
+    tags:
+    - security-alert
+    - alert
+    - detection
+    timestamp: '2025-06-24T17:51:06.322851'
+    type: security_alert
+  - content: 'Process wscript.exe created child process: winlogon.exe (PID: 9093)'
+    description: Evidence related to Execution phase
+    id: 5a9d45ee
+    importance: high
+    metadata:
+      generated: true
+      technique_name: Technique T1086
+    related_techniques:
+    - T1086
+    reliability: high
+    source: Windows Event Log (Process Creation)
+    tags:
+    - process-log
+    - process
+    - execution
+    timestamp: '2025-06-24T18:11:06.323076'
+    type: process_log
+  - content: Evidence related to Technique T1086
+    description: Evidence related to Execution phase
+    id: 79da6645
+    importance: medium
+    metadata:
+      generated: true
+      technique_name: Technique T1086
+    related_techniques:
+    - T1086
+    reliability: high
+    source: Windows Event Log (Process Creation)
+    tags:
+    - process-log
+    - process
+    - execution
+    timestamp: '2025-06-24T18:14:06.323076'
+    type: process_log
+  - content: 'Process regsvr32.exe created child process: mshta.exe (PID: 8375)'
+    description: Evidence related to Execution phase
+    id: d15257c5
+    importance: high
+    metadata:
+      generated: true
+      technique_name: Technique T1086
+    related_techniques:
+    - T1086
+    reliability: high
+    source: Windows Event Log (Process Creation)
+    tags:
+    - process-log
+    - process
+    - execution
+    timestamp: '2025-06-24T18:22:06.323076'
+    type: process_log
+  - content: Evidence related to Technique T1136.003
+    description: Evidence related to Persistence phase
+    id: ac08fb94
+    importance: high
+    metadata:
+      generated: true
+      technique_name: Technique T1136.003
+    related_techniques:
+    - T1136.003
+    reliability: medium
+    source: Windows Event Log (Process Creation)
+    tags:
+    - process-log
+    - process
+    - execution
+    timestamp: '2025-06-24T19:05:06.323245'
+    type: process_log
+  - content: 'Process regsvr32.exe terminated with exit code: 1'
+    description: Evidence related to Persistence phase
+    id: 0a1d8b0a
+    importance: medium
+    metadata:
+      generated: true
+      technique_name: Technique T1136.003
+    related_techniques:
+    - T1136.003
+    reliability: high
+    source: Windows Event Log (Process Creation)
+    tags:
+    - process-log
+    - process
+    - execution
+    timestamp: '2025-06-24T19:16:06.323245'
+    type: process_log
+  - content: 'Process cscript.exe created child process: wscript.exe (PID: 8211)'
+    description: Evidence related to Persistence phase
+    id: 0b6fad44
+    importance: high
+    metadata:
+      generated: true
+      technique_name: Technique T1136.003
+    related_techniques:
+    - T1136.003
+    reliability: high
+    source: Windows Event Log (Process Creation)
+    tags:
+    - process-log
+    - process
+    - execution
+    timestamp: '2025-06-24T18:41:06.323245'
+    type: process_log
+  - content: 'Process cscript.exe terminated with exit code: 127'
+    description: Evidence related to Defense Evasion phase
+    id: aed17f51
+    importance: medium
+    metadata:
+      generated: true
+      technique_name: Obfuscated Files or Information
+    related_techniques:
+    - T1027
+    reliability: medium
+    source: Windows Event Log (Process Creation)
+    tags:
+    - process-log
+    - file-system
+    - process
+    - execution
+    timestamp: '2025-06-24T20:53:06.323394'
+    type: process_log
+  - content: 'Process created: powershell.exe (PID: 8057) with command line: cmd.exe
+      -arg1 -arg2'
+    description: Evidence related to Defense Evasion phase
+    id: 6fd5413b
+    importance: medium
+    metadata:
+      generated: true
+      technique_name: Obfuscated Files or Information
+    related_techniques:
+    - T1027
+    reliability: high
+    source: Windows Event Log (Process Creation)
+    tags:
+    - process-log
+    - file-system
+    - process
+    - execution
+    timestamp: '2025-06-24T20:59:06.323394'
+    type: process_log
+  - content: 'Process mshta.exe terminated with exit code: -1'
+    description: Evidence related to Defense Evasion phase
+    id: 2d03b321
+    importance: medium
+    metadata:
+      generated: true
+      technique_name: Obfuscated Files or Information
+    related_techniques:
+    - T1027
+    reliability: medium
+    source: Windows Event Log (Process Creation)
+    tags:
+    - process-log
+    - file-system
+    - process
+    - execution
+    timestamp: '2025-06-24T20:58:06.323394'
+    type: process_log
+  - content: User temp_user logged in from 192.168.1.100 at 2025-06-25 17:55:06
+    description: Evidence related to Credential Access phase
+    id: b45a78db
+    importance: critical
+    metadata:
+      generated: true
+      technique_name: OS Credential Dumping
+    related_techniques:
+    - T1003.001
+    reliability: high
+    source: Domain Controller Logs
+    tags:
+    - authentication-log
+    - credentials
+    timestamp: '2025-06-24T22:03:06.323545'
+    type: authentication_log
+  - content: Failed login attempt for user admin from 192.0.2.150
+    description: Evidence related to Credential Access phase
+    id: cc446ea7
+    importance: critical
+    metadata:
+      generated: true
+      technique_name: OS Credential Dumping
+    related_techniques:
+    - T1003.001
+    reliability: medium
+    source: Domain Controller Logs
+    tags:
+    - authentication-log
+    - credentials
+    timestamp: '2025-06-24T21:40:06.323545'
+    type: authentication_log
+  - content: User operator elevated privileges to SYSTEM
+    description: Evidence related to Credential Access phase
+    id: 43e599c7
+    importance: critical
+    metadata:
+      generated: true
+      technique_name: OS Credential Dumping
+    related_techniques:
+    - T1003.001
+    reliability: high
+    source: Domain Controller Logs
+    tags:
+    - authentication-log
+    - credentials
+    timestamp: '2025-06-24T22:02:06.323545'
+    type: authentication_log
+  - content: 'Process cmd.exe created child process: powershell.exe (PID: 5090)'
+    description: Evidence related to Discovery phase
+    id: f1506564
+    importance: medium
+    metadata:
+      generated: true
+      technique_name: Technique T1016
+    related_techniques:
+    - T1016
+    reliability: high
+    source: Windows Event Log (Process Creation)
+    tags:
+    - process-log
+    - process
+    - execution
+    timestamp: '2025-06-24T22:59:06.323683'
+    type: process_log
+  - content: 'Process certutil.exe terminated with exit code: 0'
+    description: Evidence related to Discovery phase
+    id: 9e6d480e
+    importance: high
+    metadata:
+      generated: true
+      technique_name: Technique T1016
+    related_techniques:
+    - T1016
+    reliability: medium
+    source: Windows Event Log (Process Creation)
+    tags:
+    - process-log
+    - process
+    - execution
+    timestamp: '2025-06-24T23:21:06.323683'
+    type: process_log
+  - content: 'Process svchost.exe terminated with exit code: 0'
+    description: Evidence related to Discovery phase
+    id: 19a54e03
+    importance: medium
+    metadata:
+      generated: true
+      technique_name: Technique T1016
+    related_techniques:
+    - T1016
+    reliability: high
+    source: Windows Event Log (Process Creation)
+    tags:
+    - process-log
+    - process
+    - execution
+    timestamp: '2025-06-24T23:01:06.323683'
+    type: process_log
+  - content: 'Network connection blocked: 10.0.0.50 -> 45.142.214.123:53 (Rule: RULE_9389)'
+    description: Evidence related to Lateral Movement phase
+    id: fc416184
+    importance: medium
+    metadata:
+      generated: true
+      technique_name: Remote Services
+    related_techniques:
+    - T1021.002
+    reliability: high
+    source: Firewall Logs
+    tags:
+    - network-log
+    - network
+    - network
+    - connection
+    timestamp: '2025-06-25T00:04:06.323821'
+    type: network_log
+  - content: 'HTTP request to http://evil-c2.net/malicious_path from 10.0.0.50 - Response:
+      403'
+    description: Evidence related to Lateral Movement phase
+    id: 41436ce5
+    importance: medium
+    metadata:
+      generated: true
+      technique_name: Remote Services
+    related_techniques:
+    - T1021.002
+    reliability: high
+    source: Firewall Logs
+    tags:
+    - network-log
+    - network
+    - network
+    - connection
+    timestamp: '2025-06-25T00:13:06.323821'
+    type: network_log
+  - content: 'Network connection blocked: 10.0.0.50 -> 104.248.144.120:53 (Rule: RULE_6427)'
+    description: Evidence related to Lateral Movement phase
+    id: e0ed1e69
+    importance: medium
+    metadata:
+      generated: true
+      technique_name: Remote Services
+    related_techniques:
+    - T1021.002
+    reliability: high
+    source: Firewall Logs
+    tags:
+    - network-log
+    - network
+    - network
+    - connection
+    timestamp: '2025-06-25T00:07:06.323821'
+    type: network_log
+  - content: 'Process powershell.exe terminated with exit code: -1'
+    description: Evidence related to Collection phase
+    id: 18dab2d4
+    importance: high
+    metadata:
+      generated: true
+      technique_name: Technique T1039
+    related_techniques:
+    - T1039
+    reliability: medium
+    source: Windows Event Log (Process Creation)
+    tags:
+    - process-log
+    - process
+    - execution
+    timestamp: '2025-06-25T01:38:06.323966'
+    type: process_log
+  - content: 'Process chrome.exe terminated with exit code: 1'
+    description: Evidence related to Collection phase
+    id: 4e30a578
+    importance: medium
+    metadata:
+      generated: true
+      technique_name: Technique T1039
+    related_techniques:
+    - T1039
+    reliability: high
+    source: Windows Event Log (Process Creation)
+    tags:
+    - process-log
+    - process
+    - execution
+    timestamp: '2025-06-25T01:36:06.323966'
+    type: process_log
+  - content: 'Process created: certutil.exe (PID: 9845) with command line: regsvr32.exe
+      -arg1 -arg2'
+    description: Evidence related to Collection phase
+    id: 03fbd877
+    importance: medium
+    metadata:
+      generated: true
+      technique_name: Technique T1039
+    related_techniques:
+    - T1039
+    reliability: medium
+    source: Windows Event Log (Process Creation)
+    tags:
+    - process-log
+    - process
+    - execution
+    timestamp: '2025-06-25T02:13:06.323966'
+    type: process_log
+  - content: 'Process created: certutil.exe (PID: 9016) with command line: winlogon.exe
+      -arg1 -arg2'
+    description: Evidence related to Exfiltration phase
+    id: f9b078fc
+    importance: medium
+    metadata:
+      generated: true
+      technique_name: Technique T1020
+    related_techniques:
+    - T1020
+    reliability: high
+    source: Windows Event Log (Process Creation)
+    tags:
+    - process-log
+    - process
+    - execution
+    timestamp: '2025-06-25T04:21:06.324108'
+    type: process_log
+  - content: 'Process wscript.exe created child process: certutil.exe (PID: 2643)'
+    description: Evidence related to Exfiltration phase
+    id: 06970af7
+    importance: medium
+    metadata:
+      generated: true
+      technique_name: Technique T1020
+    related_techniques:
+    - T1020
+    reliability: high
+    source: Windows Event Log (Process Creation)
+    tags:
+    - process-log
+    - process
+    - execution
+    timestamp: '2025-06-25T03:55:06.324108'
+    type: process_log
+  - content: 'Process svchost.exe terminated with exit code: 127'
+    description: Evidence related to Exfiltration phase
+    id: 2566b3ca
+    importance: medium
+    metadata:
+      generated: true
+      technique_name: Technique T1020
+    related_techniques:
+    - T1020
+    reliability: high
+    source: Windows Event Log (Process Creation)
+    tags:
+    - process-log
+    - process
+    - execution
+    timestamp: '2025-06-25T03:57:06.324108'
+    type: process_log
+initial_alert:
+  alert_type: medium
+  description: Anomalous behavior detected in small healthcare organization infrastructure
+  source: Security Operations Center
+  timestamp: '2025-06-25 17:55:06'
+  title: Suspicious Activity Detected - Healthcare Environment
+scenario_metadata:
+  category: Generated Scenario
+  description: Investigate a cybersecurity incident targeting a small healthcare organization
+  difficulty: intermediate
+  environment:
+    infrastructure:
+      critical_systems:
+      - description: Patient data management
+        name: Electronic Health Records
+      - description: Lab results and workflows
+        name: Laboratory Information System
+      - description: DICOM image storage and viewing
+        name: Medical Imaging System
+      endpoints: 990
+      primary_cloud: null
+      servers: 94
+      type: on-premises
+    organization:
+      annual_revenue: $10M - $100M
+      employee_count: 298
+      name: HealthCare Partners
+      size: small
+    sector: healthcare
+  estimated_duration: 45-90 minutes
+  id: HEI-400
+  inspiration:
+    attack_name: Custom
+    attribution: Unknown
+    references: []
+    year: 2024
+  learning_objectives:
+  - Understand healthcare sector security challenges
+  - Practice intermediate level incident response
+  - Analyze attack patterns and techniques
+  - Develop threat hunting skills
+  max_players: 6
+  name: HealthCare Partners Cyber Incident
+  scenario_type: generated
+  timeline:
+    attack_start: '2025-06-25 17:55:06'
+    detection_time: '2025-06-25 17:55:06'
+    duration: ongoing
+  version: '1.0'
+scoring:
+  bonus_points:
+  - description: Avoided all red herrings
+    points: 10
+  - description: Identified additional IoCs
+    points: 15
+  - description: Provided actionable remediation
+    points: 10
+  categories:
+  - category: technique_identification
+    criteria:
+    - description: Correctly identified initial access method
+      points: 10
+    - description: Identified persistence mechanism
+      points: 10
+    - description: Found lateral movement evidence
+      points: 15
+    - description: Discovered data exfiltration
+      points: 15
+    max_points: 50
+  - category: timeline_reconstruction
+    criteria:
+    - description: Accurate attack timeline
+      points: 20
+    - description: Correct sequence of events
+      points: 15
+    - description: Identified attack duration
+      points: 10
+    max_points: 50
+  - category: attribution_analysis
+    criteria:
+    - description: Identified attacker TTPs
+      points: 15
+    - description: Assessed threat actor sophistication
+      points: 10
+    - description: Determined likely motivation
+      points: 10
+    max_points: 50
+  deductions:
+  - description: Fell for red herring
+    points: -5
+  - description: Incorrect technique attribution
+    points: -10
+  - description: Major timeline error
+    points: -15
+  max_points: 150
+timeline:
+  day_0:
+    09:00: Initial compromise detected
+    '10:30': Investigation initiated
+    '14:15': Additional indicators discovered

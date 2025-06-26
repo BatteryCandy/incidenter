@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Incidenter - Cybersecurity Incident Response Training{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-red: #dc2626;
+            --secondary-red: #ef4444;
+            --light-red: #fee2e2;
+            --dark-grey: #374151;
+            --medium-grey: #6b7280;
+            --light-grey: #f3f4f6;
+            --border-grey: #d1d5db;
+            --text-dark: #1f2937;
+            --text-light: #ffffff;
+        }
+
+        body {
+            background-color: var(--light-grey);
+            color: var(--text-dark);
+        }
+
+        .navbar-brand {
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+
+        .navbar-dark {
+            background-color: var(--dark-grey) !important;
+        }
+
+        .scenario-card {
+            transition: all 0.3s ease;
+            border: none;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            background: white;
+        }
+        .scenario-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(220, 38, 38, 0.15);
+        }
+
+        .card-header.bg-dark {
+            background-color: var(--dark-grey) !important;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-red);
+            border-color: var(--primary-red);
+        }
+        .btn-primary:hover {
+            background-color: var(--secondary-red);
+            border-color: var(--secondary-red);
+        }
+
+        .bg-primary {
+            background-color: var(--primary-red) !important;
+        }
+
+        .text-primary {
+            color: var(--primary-red) !important;
+        }
+
+        .badge.bg-primary {
+            background-color: var(--primary-red) !important;
+        }
+
+        .badge.bg-secondary {
+            background-color: var(--medium-grey) !important;
+        }
+
+        .badge.bg-info {
+            background-color: var(--dark-grey) !important;
+        }
+
+        .bg-success {
+            background-color: #16a34a !important; /* Custom green that works with our theme */
+        }
+
+        .card-header.bg-success {
+            background-color: #16a34a !important; /* Custom green for evidence header */
+            border-bottom: 2px solid var(--primary-red);
+        }
+
+        .difficulty-badge {
+            font-size: 0.8em;
+        }
+        .evidence-item {
+            border-left: 4px solid var(--primary-red);
+            background-color: var(--light-grey);
+        }
+        .investigation-log {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .theory-section {
+            background-color: var(--light-red);
+            border: 1px solid var(--secondary-red);
+        }
+        .footer {
+            background-color: var(--dark-grey);
+            color: white;
+            margin-top: 50px;
+            border-top: 3px solid var(--primary-red);
+        }
+
+        .jumbotron {
+            background: linear-gradient(135deg, var(--primary-red) 0%, var(--dark-grey) 100%) !important;
+        }
+
+        /* Hero section text styling for better contrast */
+        .jumbotron h2 {
+            color: white !important;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+            font-weight: 700 !important;
+        }
+
+        .jumbotron .lead {
+            color: white !important;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.6);
+            font-weight: 600 !important;
+        }
+
+        .jumbotron p {
+            color: rgba(255, 255, 255, 0.95) !important;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+        }
+
+        .alert-info {
+            background-color: var(--light-grey);
+            border-color: var(--border-grey);
+            color: var(--text-dark);
+        }
+
+        .card {
+            border-color: var(--border-grey);
+            transition: all 0.3s ease;
+        }
+
+        .scenario-card .card-header {
+            background-color: var(--dark-grey) !important;
+            border-bottom: 2px solid var(--primary-red);
+        }
+
+        .scenario-card .card-title {
+            color: white !important;
+        }
+
+        .text-info {
+            color: var(--primary-red) !important;
+        }
+
+        /* Improved typography and spacing */
+        h1, h2, h3, h4, h5, h6 {
+            color: var(--dark-grey);
+        }
+
+        /* Override for headers in dark backgrounds */
+        .card-header.bg-dark h1,
+        .card-header.bg-dark h2,
+        .card-header.bg-dark h3,
+        .card-header.bg-dark h4,
+        .card-header.bg-dark h5,
+        .card-header.bg-dark h6,
+        .card-header.bg-success h1,
+        .card-header.bg-success h2,
+        .card-header.bg-success h3,
+        .card-header.bg-success h4,
+        .card-header.bg-success h5,
+        .card-header.bg-success h6,
+        .text-white h1,
+        .text-white h2,
+        .text-white h3,
+        .text-white h4,
+        .text-white h5,
+        .text-white h6 {
+            color: white !important;
+        }
+
+        .lead {
+            color: var(--medium-grey);
+        }
+
+        /* Breadcrumb styling */
+        .breadcrumb-item a {
+            color: var(--primary-red);
+            text-decoration: none;
+        }
+
+        .breadcrumb-item a:hover {
+            color: var(--secondary-red);
+            text-decoration: underline;
+        }
+
+        /* Loading and interactive states */
+        .btn:focus {
+            box-shadow: 0 0 0 0.2rem rgba(220, 38, 38, 0.25);
+        }
+
+        /* Table styling */
+        .table-dark {
+            background-color: var(--dark-grey) !important;
+        }
+
+        .table-striped > tbody > tr:nth-of-type(odd) > td {
+            background-color: var(--light-grey);
+        }
+
+        /* Alert styling */
+        .alert-warning {
+            background-color: var(--light-red);
+            border-color: var(--secondary-red);
+            color: var(--text-dark);
+        }
+
+        .alert-secondary {
+            background-color: var(--light-grey);
+            border-color: var(--border-grey);
+            color: var(--text-dark);
+        }
+
+        /* Form controls */
+        .form-control:focus {
+            border-color: var(--primary-red);
+            box-shadow: 0 0 0 0.2rem rgba(220, 38, 38, 0.25);
+        }
+
+        /* Navigation styling */
+        .nav-link:hover {
+            color: var(--secondary-red) !important;
+        }
+
+        /* Button hover effects */
+        .btn-outline-primary {
+            color: var(--primary-red);
+            border-color: var(--primary-red);
+        }
+
+        .btn-outline-primary:hover {
+            background-color: var(--primary-red);
+            border-color: var(--primary-red);
+        }
+
+        /* Badge styling */
+        .badge.bg-success {
+            background-color: var(--dark-grey) !important;
+        }
+
+        .badge.bg-warning {
+            background-color: var(--secondary-red) !important;
+        }
+
+        /* Modal styling */
+        .modal-header {
+            background-color: var(--light-grey);
+            border-bottom: 1px solid var(--border-grey);
+        }
+
+        .modal-title {
+            color: var(--dark-grey);
+        }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="{{ url_for('index') }}">
+                <i class="fas fa-shield-alt"></i> Incidenter
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('index') }}">Scenarios</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('view_sessions') }}">My Sessions</a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('logout') }}">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container mt-4">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="footer mt-auto py-3">
+        <div class="container text-center">
+            <span class="text-muted">
+                &copy; 2025 Incidenter - Cybersecurity Incident Response Simulation Platform
+            </span>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,212 @@
+{% extends "base.html" %}
+
+{% block title %}Session {{ session.session_id }} - Incidenter{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ url_for('view_sessions') }}">My Sessions</a></li>
+                <li class="breadcrumb-item active">{{ session.session_id[:8] }}</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card mb-4">
+            <div class="card-header bg-dark text-white">
+                <h4 class="mb-0">
+                    <i class="fas fa-clipboard-check"></i>
+                    Session Summary - {{ scenario.metadata.name }}
+                </h4>
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <strong>Player:</strong> {{ session.player_name }}<br>
+                        <strong>Started:</strong> {{ session.start_time.strftime('%Y-%m-%d %H:%M:%S') if session.start_time else 'Unknown' }}<br>
+                        {% if session.completion_time %}
+                            <strong>Completed:</strong> {{ session.completion_time.strftime('%Y-%m-%d %H:%M:%S') }}<br>
+                            <strong>Duration:</strong>
+                            {% set duration = session.completion_time - session.start_time %}
+                            {{ duration.total_seconds() // 3600 }}h {{ (duration.total_seconds() % 3600) // 60 }}m
+                        {% else %}
+                            <span class="badge bg-warning">In Progress</span>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-6">
+                        <strong>Investigation Actions:</strong> {{ session.investigation_actions|length }}<br>
+                        <strong>Evidence Discovered:</strong> {{ session.evidence_discovered|length }}<br>
+                        <strong>Theories Submitted:</strong> {{ session.theories_submitted|length }}<br>
+                        <strong>Hints Used:</strong> {{ session.hints_used }}
+                    </div>
+                </div>
+
+                {% if session.final_score %}
+                <div class="alert alert-success">
+                    <h5><i class="fas fa-trophy"></i> Final Score: {{ session.final_score.overall_grade }}</h5>
+                    <p>{{ session.final_score.feedback }}</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Investigation Timeline -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-timeline"></i> Investigation Timeline
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if session.investigation_actions %}
+                    <div class="timeline">
+                        {% for action in session.investigation_actions %}
+                        <div class="timeline-item mb-3">
+                            <div class="d-flex">
+                                <div class="flex-shrink-0">
+                                    <div class="timeline-marker bg-primary rounded-circle d-flex align-items-center justify-content-center" style="width: 30px; height: 30px;">
+                                        <i class="fas fa-search text-white small"></i>
+                                    </div>
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <div class="card">
+                                        <div class="card-body py-2">
+                                            <h6 class="mb-1">{{ action.action.replace('_', ' ').title() }}</h6>
+                                            <p class="mb-1">{{ action.details }}</p>
+                                            <small class="text-muted">
+                                                {{ action.timestamp.strftime('%H:%M:%S') if action.timestamp else 'Unknown time' }}
+                                            </small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-muted">No investigation actions recorded.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Theories Submitted -->
+        {% if session.theories_submitted %}
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-brain"></i> Theories Submitted
+                </h5>
+            </div>
+            <div class="card-body">
+                {% for theory in session.theories_submitted %}
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h6 class="card-title">Theory {{ loop.index }}</h6>
+                        <p class="card-text">{{ theory.theory }}</p>
+                        <small class="text-muted">
+                            Submitted: {{ theory.timestamp.strftime('%Y-%m-%d %H:%M:%S') if theory.timestamp else 'Unknown time' }}
+                        </small>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="col-lg-4">
+        <!-- Score Breakdown -->
+        {% if session.final_score %}
+        <div class="card mb-4">
+            <div class="card-header bg-success text-white">
+                <h6 class="mb-0">
+                    <i class="fas fa-chart-bar"></i> Score Breakdown
+                </h6>
+            </div>
+            <div class="card-body">
+                {% for category, score in session.final_score.category_scores.items() %}
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between">
+                        <span>{{ category.replace('_', ' ').title() }}</span>
+                        <strong>{{ score.score }}/{{ score.max_score }}</strong>
+                    </div>
+                    <div class="progress">
+                        <div class="progress-bar" style="width: {{ (score.score / score.max_score * 100) if score.max_score > 0 else 0 }}%"></div>
+                    </div>
+                    {% if score.feedback %}
+                        <small class="text-muted">{{ score.feedback }}</small>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Evidence Discovered -->
+        <div class="card mb-4">
+            <div class="card-header bg-info text-white">
+                <h6 class="mb-0">
+                    <i class="fas fa-clipboard-list"></i>
+                    Evidence Discovered ({{ session.evidence_discovered|length }})
+                </h6>
+            </div>
+            <div class="card-body" style="max-height: 300px; overflow-y: auto;">
+                {% if session.evidence_discovered %}
+                    {% for evidence in session.evidence_discovered %}
+                    <div class="card mb-2">
+                        <div class="card-body py-2">
+                            <h6 class="mb-1">{{ evidence.type|default('Unknown')|title }}</h6>
+                            <p class="mb-1 small">{{ evidence.description|default('No description available') }}</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <small class="text-muted">{{ evidence.source|default('Unknown Source') }}</small>
+                                <span class="badge bg-{{ 'danger' if evidence.importance == 'critical' else 'warning' if evidence.importance == 'high' else 'info' if evidence.importance == 'medium' else 'secondary' }}">
+                                    {{ evidence.importance|default('unknown') }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="text-muted">No evidence discovered.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Session Actions -->
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="fas fa-cog"></i> Actions
+                </h6>
+            </div>
+            <div class="card-body">
+                {% if not session.completion_time %}
+                    <a href="{{ url_for('play_game') }}?resume={{ session.session_id }}"
+                       class="btn btn-primary btn-sm w-100 mb-2">
+                        <i class="fas fa-play"></i> Resume Session
+                    </a>
+                {% endif %}
+                <button class="btn btn-outline-secondary btn-sm w-100 mb-2" onclick="exportSession()">
+                    <i class="fas fa-download"></i> Export Session
+                </button>
+                <a href="{{ url_for('view_sessions') }}" class="btn btn-outline-primary btn-sm w-100">
+                    <i class="fas fa-arrow-left"></i> Back to Sessions
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function exportSession() {
+    // This would trigger a download of the session data
+    alert('Export functionality would be implemented here');
+}
+</script>
+{% endblock %}

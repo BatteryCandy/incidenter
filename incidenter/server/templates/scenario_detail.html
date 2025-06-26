@@ -1,0 +1,202 @@
+{% extends "base.html" %}
+
+{% block title %}{{ scenario.scenario_metadata.name }} - Incidenter{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ url_for('index') }}">Scenarios</a></li>
+                <li class="breadcrumb-item active">{{ scenario.scenario_metadata.name }}</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header bg-dark text-white">
+                <h2 class="mb-0">
+                    <i class="fas fa-shield-alt me-2"></i> {{ scenario.scenario_metadata.name }}
+                </h2>
+            </div>
+            <div class="card-body">
+                <p class="lead">{{ scenario.scenario_metadata.description }}</p>
+
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <strong>Difficulty:</strong>
+                        <span class="badge bg-{{ 'danger' if scenario.scenario_metadata.difficulty == 'Hard' else 'warning' if scenario.scenario_metadata.difficulty == 'Medium' else 'success' }} ms-2">
+                            {{ scenario.scenario_metadata.difficulty }}
+                        </span>
+                    </div>
+                    <div class="col-md-6">
+                        <strong>Estimated Time:</strong> {{ scenario.scenario_metadata.estimated_duration }}
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <strong>Category:</strong>
+                    <span class="badge bg-secondary me-2">{{ scenario.scenario_metadata.category }}</span>
+                    <strong>Environment:</strong>
+                    <span class="badge bg-secondary me-2">{{ scenario.scenario_metadata.environment.sector.title() }}</span>
+                </div>
+
+                <h4 style="color: var(--dark-grey);"><i class="fas fa-bullseye me-2" style="color: var(--primary-red);"></i> Learning Objectives</h4>
+                <ul>
+                    {% for objective in scenario.scenario_metadata.learning_objectives %}
+                        <li>{{ objective }}</li>
+                    {% endfor %}
+                </ul>
+
+                <h4><i class="fas fa-book"></i> Scenario Background</h4>
+                <div class="alert alert-secondary">
+                    {{ scenario.attack_overview.summary|replace('\n', '<br>')|safe }}
+                </div>
+
+                <h4><i class="fas fa-exclamation-triangle"></i> Initial Alert</h4>
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h6><strong>{{ scenario.initial_alert.title }}</strong></h6>
+                        <div class="mb-2">
+                            <span class="badge bg-{{ 'danger' if scenario.initial_alert.alert_type == 'high' else 'warning' if scenario.initial_alert.alert_type == 'medium' else 'info' }}">
+                                {{ scenario.initial_alert.alert_type.upper() }}
+                            </span>
+                            <span class="text-muted ms-2">{{ scenario.initial_alert.timestamp }}</span>
+                            <span class="text-muted ms-2">Source: {{ scenario.initial_alert.source }}</span>
+                        </div>
+                        <pre style="background: #f8f9fa; padding: 15px; border-radius: 5px; white-space: pre-wrap; margin: 0;">{{ scenario.initial_alert.description }}</pre>
+                    </div>
+                </div>
+
+                <h4><i class="fas fa-history"></i> Historical Inspiration</h4>
+                <div class="mb-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h6 class="card-title">{{ scenario.scenario_metadata.inspiration.attack_name }} ({{ scenario.scenario_metadata.inspiration.year }})</h6>
+                            <p class="card-text">
+                                <strong>Attribution:</strong> {{ scenario.scenario_metadata.inspiration.attribution }}<br>
+                                <strong>Organization:</strong> {{ scenario.scenario_metadata.environment.organization.name }}<br>
+                                <strong>Sector:</strong> {{ scenario.scenario_metadata.environment.sector.title() }}<br>
+                                <strong>Organization Size:</strong> {{ scenario.scenario_metadata.environment.organization.employee_count|default('Unknown') }} employees
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card mb-4">
+            <div class="card-header text-white" style="background-color: var(--primary-red);">
+                <h5 class="mb-0">
+                    <i class="fas fa-play me-2"></i> Start Playing
+                </h5>
+            </div>
+            <div class="card-body">
+                    <form method="POST" action="{{ url_for('start_game', scenario_id=scenario.scenario_metadata.id) }}">
+                        <div class="mb-3">
+                            <label for="player_name" class="form-label">Your Name:</label>
+                            <input type="text" class="form-control" id="player_name" name="player_name"
+                                   placeholder="Enter your name" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-lg w-100">
+                            <i class="fas fa-rocket me-2"></i> Begin Investigation
+                        </button>
+                    </form>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-header text-white" style="background-color: var(--dark-grey);">
+                <h6 class="mb-0">
+                    <i class="fas fa-crosshairs me-2"></i> Kill Chain Preview
+                </h6>
+            </div>
+            <div class="card-body">
+                {% for chain_item in scenario.attack_overview.kill_chain %}
+                    <div class="mb-3">
+                        <h6 class="text-danger">{{ chain_item.phase }}</h6>
+                        <p class="small">{{ chain_item.description }}</p>
+                        {% if chain_item.techniques %}
+                            {% for technique in chain_item.techniques %}
+                                <span class="badge bg-danger me-1">{{ technique }}</span>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header bg-info text-white">
+                <h6 class="mb-0">
+                    <i class="fas fa-chart-bar"></i> Scenario Stats
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-6">
+                        <div class="stat-item">
+                            <h4 class="text-primary">{{ scenario.attack_overview.kill_chain|length }}</h4>
+                            <small>Attack Phases</small>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="stat-item">
+                            <h4 class="text-success">{{ scenario.scenario_metadata.max_players }}</h4>
+                            <small>Max Players</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-graduation-cap"></i> What You'll Learn
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <h6><i class="fas fa-search text-primary"></i> Investigation Skills</h6>
+                        <ul class="small">
+                            <li>Digital forensics analysis</li>
+                            <li>Log file interpretation</li>
+                            <li>Network traffic analysis</li>
+                            <li>Evidence correlation</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-4">
+                        <h6><i class="fas fa-brain text-success"></i> Threat Analysis</h6>
+                        <ul class="small">
+                            <li>Attack vector identification</li>
+                            <li>TTPs (Tactics, Techniques, Procedures)</li>
+                            <li>Threat actor profiling</li>
+                            <li>Attribution methodologies</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-4">
+                        <h6><i class="fas fa-shield-alt text-warning"></i> Response Planning</h6>
+                        <ul class="small">
+                            <li>Containment strategies</li>
+                            <li>Recovery procedures</li>
+                            <li>Communication protocols</li>
+                            <li>Lessons learned documentation</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

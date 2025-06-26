@@ -1,0 +1,237 @@
+# Scenario Framework Template
+# This YAML template defines the structure for incident scenarios
+
+scenario_metadata:
+  name: "string"                    # Human-readable scenario name
+  id: "string"                      # Unique identifier (e.g., "CARB-001")
+  version: "string"                 # Template version
+  inspiration:                      # Real-world attack inspiration
+    attack_name: "string"           # e.g., "Carbanak"
+    year: "integer"                 # Year of original attack
+    attribution: "string"           # Known threat actor/group
+    references:                     # External references
+      - url: "string"
+        description: "string"
+
+  # Environment Details
+  environment:
+    sector: "string"                # finance, healthcare, government, technology, retail
+    organization:
+      name: "string"                # Fictional organization name
+      size: "string"                # small, medium, large, enterprise
+      employee_count: "integer"     # Approximate employee count
+      annual_revenue: "string"      # Revenue range
+
+    infrastructure:
+      type: "string"                # on-premises, cloud, hybrid
+      primary_cloud: "string"       # AWS, Azure, GCP, multi-cloud
+      endpoints: "integer"          # Number of endpoints
+      servers: "integer"            # Number of servers
+      critical_systems:             # List of critical business systems
+        - name: "string"
+          description: "string"
+
+  # Game Mechanics
+  difficulty: "string"              # beginner, intermediate, advanced, expert
+  estimated_duration: "string"     # Expected completion time
+  max_players: "integer"           # Recommended team size
+
+# Attack Narrative
+attack_overview:
+  objective: "string"               # Attacker's primary goal
+  motivation: "string"              # Financial, espionage, disruption, etc.
+  sophistication: "string"          # Script kiddie, criminal, nation-state
+
+  timeline:
+    start_date: "string"            # When attack began (YYYY-MM-DD)
+    detection_date: "string"        # When first detected
+    duration_days: "integer"       # How long attack persisted
+
+# MITRE ATT&CK Kill Chain
+kill_chain:
+  initial_access:
+    technique_id: "string"          # MITRE technique ID (e.g., T1566.001)
+    technique_name: "string"        # Human-readable name
+    description: "string"           # How this was executed
+    evidence:                       # Supporting evidence
+      - type: "string"              # log, artifact, witness, network
+        content: "string"           # Actual evidence content
+        file_path: "string"         # Where evidence would be found
+        timestamp: "string"         # When evidence was created
+
+  execution:
+    technique_id: "string"
+    technique_name: "string"
+    description: "string"
+    evidence:
+      - type: "string"
+        content: "string"
+        file_path: "string"
+        timestamp: "string"
+
+  persistence:
+    technique_id: "string"
+    technique_name: "string"
+    description: "string"
+    evidence:
+      - type: "string"
+        content: "string"
+        file_path: "string"
+        timestamp: "string"
+
+  privilege_escalation:
+    technique_id: "string"
+    technique_name: "string"
+    description: "string"
+    evidence:
+      - type: "string"
+        content: "string"
+        file_path: "string"
+        timestamp: "string"
+
+  defense_evasion:
+    technique_id: "string"
+    technique_name: "string"
+    description: "string"
+    evidence:
+      - type: "string"
+        content: "string"
+        file_path: "string"
+        timestamp: "string"
+
+  credential_access:
+    technique_id: "string"
+    technique_name: "string"
+    description: "string"
+    evidence:
+      - type: "string"
+        content: "string"
+        file_path: "string"
+        timestamp: "string"
+
+  discovery:
+    technique_id: "string"
+    technique_name: "string"
+    description: "string"
+    evidence:
+      - type: "string"
+        content: "string"
+        file_path: "string"
+        timestamp: "string"
+
+  lateral_movement:
+    technique_id: "string"
+    technique_name: "string"
+    description: "string"
+    evidence:
+      - type: "string"
+        content: "string"
+        file_path: "string"
+        timestamp: "string"
+
+  collection:
+    technique_id: "string"
+    technique_name: "string"
+    description: "string"
+    evidence:
+      - type: "string"
+        content: "string"
+        file_path: "string"
+        timestamp: "string"
+
+  command_and_control:
+    technique_id: "string"
+    technique_name: "string"
+    description: "string"
+    evidence:
+      - type: "string"
+        content: "string"
+        file_path: "string"
+        timestamp: "string"
+
+  exfiltration:
+    technique_id: "string"
+    technique_name: "string"
+    description: "string"
+    evidence:
+      - type: "string"
+        content: "string"
+        file_path: "string"
+        timestamp: "string"
+
+  impact:
+    technique_id: "string"
+    technique_name: "string"
+    description: "string"
+    evidence:
+      - type: "string"
+        content: "string"
+        file_path: "string"
+        timestamp: "string"
+
+# Red Herrings (False Clues)
+red_herrings:
+  - type: "string"                  # log, artifact, witness, network
+    content: "string"               # Misleading evidence content
+    file_path: "string"             # Where red herring would be found
+    timestamp: "string"             # When created
+    misdirection: "string"          # What this might falsely suggest
+    why_false: "string"             # Explanation of why it's misleading
+
+# Initial Alert/Trigger
+initial_alert:
+  alert_type: "string"              # SIEM, EDR, user_report, external_notification
+  severity: "string"                # low, medium, high, critical
+  source_system: "string"          # System that generated alert
+  timestamp: "string"               # When alert fired
+  description: "string"             # What players see initially
+  raw_data: "string"                # Technical details of alert
+
+# Investigation Opportunities
+investigation_areas:
+  - area: "string"                  # e.g., "network_logs", "endpoint_forensics"
+    description: "string"           # What this investigation entails
+    available_evidence:             # Evidence discoverable through this area
+      - evidence_id: "string"       # References evidence in kill_chain
+        reveal_condition: "string"  # What question/action reveals this
+
+# Scoring Rubric
+scoring:
+  max_points: "integer"             # Total possible points
+  categories:
+    - category: "string"            # e.g., "technique_identification"
+      max_points: "integer"         # Points available for this category
+      criteria:                     # How points are awarded
+        - description: "string"
+          points: "integer"
+
+  bonus_points:                     # Additional scoring opportunities
+    - description: "string"         # e.g., "Identified all TTPs correctly"
+      points: "integer"
+
+  deductions:                       # Point deductions
+    - description: "string"         # e.g., "Fell for red herring"
+      points: "integer"             # Negative value
+
+# Facilitator Guidance
+facilitator_notes:
+  introduction: "string"            # How to introduce the scenario
+  key_teaching_points:              # Learning objectives
+    - "string"
+  common_mistakes:                  # What players often get wrong
+    - mistake: "string"
+      guidance: "string"            # How to guide them back on track
+  time_management: "string"         # Pacing recommendations
+  difficulty_adjustments:           # How to make easier/harder
+    easier:
+      - "string"
+    harder:
+      - "string"
+
+# Technical Requirements
+requirements:
+  ai_model: "string"                # Recommended LLM model
+  estimated_tokens: "integer"      # Approximate token usage
+  external_data:                    # Any external data sources needed
+    - source: "string"
+      description: "string"

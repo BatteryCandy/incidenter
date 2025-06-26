@@ -1,0 +1,447 @@
+scenario_metadata:
+  name: "EnergyFlow Pipeline Ransomware"
+  id: "colonial_pipeline_inspired"
+  version: "1.0"
+  description: "A fictional critical infrastructure attack inspired by the Colonial Pipeline incident, featuring ransomware targeting pipeline control systems and operational technology networks."
+  difficulty: "Hard"
+  estimated_duration: "75-90 minutes"
+  category: "Critical Infrastructure"
+  scenario_type: "historical_inspired"
+  max_players: 4
+
+  inspiration:
+    attack_name: "Colonial Pipeline Attack"
+    year: 2021
+    attribution: "DarkSide Ransomware Group"
+    references:
+      - url: "https://en.wikipedia.org/wiki/Colonial_Pipeline_cyberattack"
+        description: "Colonial Pipeline cyberattack overview"
+
+  environment:
+    sector: "energy"
+    organization:
+      name: "EnergyFlow Pipeline Corporation"
+      size: "large"
+      employee_count: 5000
+      annual_revenue: "$1B+"
+    infrastructure:
+      type: "hybrid"
+      primary_cloud: "AWS"
+      endpoints: 3200
+      servers: 450
+
+  timeline:
+    attack_start: "2025-06-01 22:30:00"
+    detection_time: "2025-06-04 08:15:00"
+    duration: "ongoing"
+
+  learning_objectives:
+    - "Understand critical infrastructure attack vectors"
+    - "Learn about ransomware-as-a-service operations"
+    - "Practice coordinating with federal agencies during incidents"
+    - "Experience business continuity decisions under pressure"
+    - "Understand the geopolitical implications of infrastructure attacks"
+
+attack_overview:
+  summary: "Sophisticated ransomware group targets critical energy infrastructure through VPN compromise and lateral movement, causing widespread fuel supply disruption."
+
+  kill_chain:
+    - phase: "Reconnaissance"
+      description: "Intelligence gathering on critical infrastructure targets and VPN access points"
+      techniques: ["T1590", "T1596"]
+    - phase: "Initial Access"
+      description: "VPN credential stuffing and exploitation of remote access services"
+      techniques: ["T1110.003", "T1133"]
+    - phase: "Execution"
+      description: "PowerShell and batch script execution for malware deployment"
+      techniques: ["T1059.001", "T1059.003"]
+    - phase: "Persistence"
+      description: "Service creation and registry modifications for persistence"
+      techniques: ["T1543.003", "T1547.001"]
+    - phase: "Defense Evasion"
+      description: "Security tool disabling and log file deletion"
+      techniques: ["T1562.001", "T1070.001"]
+    - phase: "Discovery"
+      description: "Network enumeration and system information gathering"
+      techniques: ["T1018", "T1082", "T1083"]
+    - phase: "Lateral Movement"
+      description: "RDP and SMB-based movement across the network"
+      techniques: ["T1021.001", "T1021.002"]
+    - phase: "Collection"
+      description: "Data archiving and staging for exfiltration"
+      techniques: ["T1005", "T1560.001"]
+    - phase: "Exfiltration"
+      description: "Sensitive data theft before encryption"
+      techniques: ["T1041", "T1048.003"]
+    - phase: "Impact"
+      description: "Ransomware deployment across critical systems"
+      techniques: ["T1486", "T1489"]
+
+initial_alert:
+  timestamp: "2025-06-04 08:15:22"
+  source: "Network Operations Center"
+  alert_type: "critical"
+  title: "Multiple Systems Encrypted - Operations Disrupted"
+  description: "Ransomware deployed across pipeline control systems with ransom demand. Critical infrastructure operations halted as precautionary measure."
+
+timeline:
+  day_0:
+    "22:30": "Initial VPN credential stuffing attack begins"
+    "22:45": "Successful compromise of maintenance.svc account"
+    "23:15": "First unauthorized VPN session established"
+  day_1:
+    "02:30": "Internal network reconnaissance begins"
+    "04:15": "Web shell deployed on internal server"
+    "06:45": "Security tool disabling attempts"
+    "08:20": "Lateral movement to additional systems"
+    "14:30": "Data collection and archiving begins"
+  day_2:
+    "01:00": "Large-scale data exfiltration starts"
+    "09:15": "Administrative credential harvesting"
+    "16:30": "Ransomware staging and preparation"
+  day_3:
+    "22:00": "Final data exfiltration push"
+    "23:45": "Ransomware deployment initiated"
+  day_4:
+    "05:45": "Mass encryption detected - pipeline shutdown"
+    "06:15": "Emergency response activated"
+    "08:30": "Government agencies notified"
+    "12:00": "Federal coordination center established"
+
+attack_chain:
+  - name: "Initial Access"
+    techniques:
+      - id: "T1078"
+        name: "Valid Accounts"
+        description: "Used compromised VPN credentials for initial access"
+      - id: "T1110.003"
+        name: "Password Spraying"
+        description: "Credential stuffing attack against VPN portal"
+    indicators:
+      - "Multiple failed authentication attempts from foreign IPs"
+      - "Successful login with reused credentials"
+      - "VPN access from unusual geographic locations"
+
+  - name: "Persistence"
+    techniques:
+      - id: "T1505.003"
+        name: "Web Shell"
+        description: "Deployed web shell on compromised internal server"
+      - id: "T1053.005"
+        name: "Scheduled Task/Job"
+        description: "Created scheduled tasks for persistent access"
+    indicators:
+      - "Suspicious web shell files on internal servers"
+      - "Unauthorized scheduled task creation"
+      - "Registry modifications for startup persistence"
+
+  - name: "Defense Evasion"
+    techniques:
+      - id: "T1562.001"
+        name: "Disable or Modify Tools"
+        description: "Disabled security monitoring and antivirus"
+      - id: "T1070.001"
+        name: "Indicator Removal on Host"
+        description: "Cleared event logs and removed forensic evidence"
+    indicators:
+      - "Security service termination events"
+      - "Event log clearing activities"
+      - "Anti-forensics tool usage"
+
+  - name: "Discovery and Collection"
+    techniques:
+      - id: "T1018"
+        name: "Remote System Discovery"
+        description: "Scanned network for additional targets"
+      - id: "T1560.001"
+        name: "Archive Collected Data"
+        description: "Compressed sensitive data for exfiltration"
+    indicators:
+      - "Network scanning from compromised systems"
+      - "Large archive file creation"
+      - "Sensitive document access patterns"
+
+  - name: "Impact"
+    techniques:
+      - id: "T1486"
+        name: "Data Encrypted for Impact"
+        description: "Deployed ransomware across IT infrastructure"
+      - id: "T1489"
+        name: "Service Stop"
+        description: "Terminated critical business services"
+    indicators:
+      - "Mass file encryption events"
+      - "Service termination activities"
+      - "Ransom note deployment"
+
+evidence:
+  items:
+    - id: "ev_001"
+      type: "file"
+      source: "ransom_note"
+      importance: "critical"
+      description: "ShadowFlow Ransom Message"
+      content: |
+        ╔═══════════════════════════════════════════╗
+        ║         SHADOWFLOW COLLECTIVE             ║
+        ║      YOUR NETWORK HAS BEEN ENCRYPTED      ║
+        ╚═══════════════════════════════════════════╝
+
+        EnergyFlow Pipeline Corporation,
+
+        Your IT infrastructure has been encrypted with military-grade encryption.
+        We have also exfiltrated 100GB of sensitive operational data, including:
+
+        • Pipeline control system documentation
+        • Employee personal information (SSNs, addresses)
+        • Customer billing and delivery records
+        • Financial reports and contracts
+        • Regulatory compliance documents
+        • Executive communications
+
+        PAYMENT TERMS:
+        Amount: $5,000,000 USD in Bitcoin
+        Deadline: 7 days from encryption (June 11, 2025)
+        Late Payment: $10,000,000 USD after deadline
+
+        CONSEQUENCES OF NON-PAYMENT:
+        • Your data will be sold on underground markets
+        • Full data dump will be published publicly
+        • Decryption keys will be permanently deleted
+        • Additional attacks on your infrastructure
+
+        PROOF OF DATA THEFT:
+        Visit: http://shadowflowleaks.onion/energyflow
+        Password: EF-Pipeline-2025-Breach
+
+        CONTACT FOR NEGOTIATION:
+        Tor Browser: shadowflow-support.onion
+        Encryption Key: [PGP KEY BLOCK PROVIDED]
+
+        DO NOT CONTACT LAW ENFORCEMENT OR HIRE RECOVERY SERVICES
+        WE MONITOR YOUR COMMUNICATIONS AND WILL RESPOND ACCORDINGLY
+
+        Professional. Reliable. Discrete.
+        - ShadowFlow Collective
+
+    - id: "ev_002"
+      type: "log"
+      source: "vpn_compromise"
+      importance: "critical"
+      description: "VPN Access Breach Analysis"
+      content: |
+        VPN ACCESS INVESTIGATION REPORT
+
+        COMPROMISED ACCOUNT: maintenance.svc@energyflow.com
+        Account Type: Service account for third-party maintenance
+        Last Password Change: 2023-08-15 (294+ days ago)
+
+        BREACH TIMELINE:
+        2025-06-01 18:23:45 - First unauthorized login attempt
+        Source IP: 45.142.214.88 (Netherlands VPN service)
+        Result: Failed authentication
+
+        2025-06-01 18:24:12 - Successful credential stuffing attack
+        Source IP: 45.142.214.88
+        Method: Password reuse from previous data breach
+        Duration: 8 hours 45 minutes
+
+        CREDENTIAL STUFFING INDICATORS:
+        • Password found in "Collection #1" breach database
+        • Account had not changed password since initial setup
+        • No multi-factor authentication enabled
+        • Account had excessive network privileges
+
+        DATA TRANSFER ANALYSIS:
+        Total Inbound: 2.3 GB (tools and malware)
+        Total Outbound: 127 GB (exfiltrated data)
+        Peak Transfer: 2025-06-03 23:15 (15 GB in 2 hours)
+
+    - id: "ev_003"
+      type: "network"
+      source: "it_ot_boundary"
+      importance: "high"
+      description: "IT/OT Network Boundary Analysis"
+      content: |
+        IT/OT NETWORK SEGMENTATION ASSESSMENT
+
+        NETWORK ARCHITECTURE:
+        IT Network: 10.10.0.0/16 (Corporate systems)
+        OT Network: 192.168.100.0/24 (Pipeline control systems)
+        DMZ: 172.16.1.0/24 (External interfaces)
+
+        SEGMENTATION CONTROLS:
+        Primary Firewall: Cisco ASA 5585-X
+        Rule Count: 1,247 active rules
+        Default Policy: Deny all
+
+        COMPROMISE ASSESSMENT:
+        Attack Vector: IT network compromise only
+        OT Impact: Indirect through business systems
+
+        OT SYSTEM STATUS (Verified Secure):
+        ✓ SCADA Systems: Operational, isolated
+        ✓ PLCs: Functioning normally
+        ✓ Safety Systems: Fully operational
+        ✓ Pipeline Sensors: Real-time monitoring active
+        ✓ Valve Controls: Manual override available
+
+        SHUTDOWN DECISION:
+        Reason: Inability to coordinate operations without IT systems
+        Safety: OT systems remain secure and functional
+        Business: Cannot operate without billing/scheduling
+        Regulatory: Required notification for operational changes
+
+    - id: "ev_004"
+      type: "intelligence"
+      source: "data_exfiltration"
+      importance: "critical"
+      description: "Stolen Data Inventory"
+      content: |
+        DATA EXFILTRATION ANALYSIS REPORT
+
+        TOTAL DATA STOLEN: 127 GB
+        Exfiltration Period: 2025-06-02 to 2025-06-03
+        Method: Encrypted HTTPS uploads to compromised cloud storage
+
+        DATA CATEGORIES IDENTIFIED:
+
+        1. OPERATIONAL DOCUMENTS (45 GB)
+        • Pipeline schematics and engineering drawings
+        • Maintenance schedules and procedures
+        • Safety protocols and emergency procedures
+        • Regulatory inspection reports
+        • Environmental impact assessments
+
+        2. EMPLOYEE INFORMATION (23 GB)
+        • HR records for 8,947 employees
+        • Social Security Numbers and home addresses
+        • Salary information and performance reviews
+        • Medical records and benefits information
+        • Background check results
+
+        3. CUSTOMER DATA (31 GB)
+        • Refined product delivery contracts
+        • Billing records and payment information
+        • Shipper identification and volumes
+        • Pricing agreements and market data
+        • Delivery schedules and logistics data
+
+    - id: "ev_005"
+      type: "report"
+      source: "government_response"
+      importance: "high"
+      description: "Federal Agency Coordination"
+      content: |
+        FEDERAL INCIDENT RESPONSE COORDINATION
+        Classification: FOR OFFICIAL USE ONLY (FOUO)
+
+        PARTICIPATING AGENCIES:
+
+        CYBERSECURITY & INFRASTRUCTURE SECURITY AGENCY (CISA)
+        • Incident Response Team deployed
+        • National Critical Functions assessment
+        • Private sector coordination
+        • Threat intelligence sharing
+
+        FEDERAL BUREAU OF INVESTIGATION (FBI)
+        • Criminal investigation initiated
+        • Cybercrime task force activated
+        • International law enforcement coordination
+        • Evidence collection and analysis
+
+        DEPARTMENT OF ENERGY (DOE)
+        • Energy sector impact assessment
+        • Strategic petroleum reserve evaluation
+        • Power grid stability monitoring
+        • Alternative supply coordination
+
+    - id: "ev_006"
+      type: "business"
+      source: "ransom_negotiation"
+      importance: "medium"
+      description: "Ransom Payment Decision Analysis"
+      content: |
+        CONFIDENTIAL - ATTORNEY-CLIENT PRIVILEGE
+        EnergyFlow Pipeline Corporation
+        Ransom Payment Decision Matrix
+
+        FINANCIAL IMPACT ANALYSIS:
+
+        Daily Revenue Loss: $12.5 million
+        Daily Operating Cost Savings: $3.2 million
+        Net Daily Loss: $9.3 million
+
+        Projected Downtime Scenarios:
+        • Pay Ransom (3-5 days): $28-46 million loss
+        • Rebuild Systems (2-4 weeks): $130-260 million loss
+        • Hybrid Approach (1-2 weeks): $65-130 million loss
+
+        BOARD RECOMMENDATION:
+        The executive team recommends PAYING THE RANSOM due to:
+        1. Significant ongoing financial losses
+        2. Critical national infrastructure impact
+        3. Insurance coverage availability
+        4. Fastest path to operational restoration
+        5. Stakeholder pressure for rapid resolution
+
+solution:
+  attack_type: "Ransomware Attack on Critical Infrastructure"
+  attack_vector: "Credential stuffing attack against VPN portal using reused passwords"
+  primary_objective: "Financial extortion through ransomware and data theft"
+  secondary_objectives:
+    - "Data exfiltration for double extortion"
+    - "Maximum business disruption"
+    - "Critical infrastructure impact"
+    - "Public pressure for ransom payment"
+
+  key_indicators:
+    - "VPN credential stuffing from foreign IP addresses"
+    - "Mass file encryption events across IT infrastructure"
+    - "Large-scale data exfiltration activities"
+    - "Security tool disabling and log clearing"
+    - "Ransom note deployment on critical systems"
+    - "IT/OT network boundary violations"
+
+  timeline_summary: |
+    4-day attack from VPN compromise (June 1) through credential stuffing,
+    network lateral movement, data exfiltration, and ransomware deployment
+    causing pipeline shutdown (June 4). Attack demonstrates how IT compromise
+    can impact critical infrastructure operations even when OT systems remain secure.
+
+  business_impact: |
+    - Estimated $130-260M+ in lost revenue and incident response costs
+    - Complete pipeline shutdown affecting 17 states
+    - National fuel supply disruption requiring government coordination
+    - Multiple federal agency involvement and regulatory violations
+    - National media coverage and public confidence impact
+
+scoring:
+  investigation_areas:
+    - "Attack Vector Analysis"
+    - "Critical Infrastructure Impact Assessment"
+    - "Data Exfiltration and Double Extortion"
+    - "Government Response Coordination"
+    - "Business Continuity Decision Making"
+    - "IT/OT Network Segmentation Analysis"
+    - "Ransom Payment Decision Factors"
+
+  critical_evidence:
+    - "ev_001"  # Ransom note
+    - "ev_002"  # VPN breach analysis
+    - "ev_003"  # IT/OT boundary analysis
+    - "ev_004"  # Data exfiltration inventory
+
+  time_pressure: true
+  red_herrings:
+    - "Focus on OT systems may distract from IT-only compromise"
+    - "Ransom payment debate may overshadow technical investigation"
+    - "Multiple federal agencies could suggest state-sponsored attack rather than criminal"
+
+learning_objectives:
+  - "Understand critical infrastructure cybersecurity challenges"
+  - "Learn about operational technology (OT) vs information technology (IT) security"
+  - "Practice incident response for national security implications"
+  - "Experience coordination with government agencies and regulators"
+  - "Understand the business continuity impact of cyber attacks"
+  - "Learn about ransomware-as-a-service operations and double extortion"
