@@ -36,6 +36,72 @@ python incidenter.py generate --sector finance --org-size large --infra hybrid
 python incidenter.py play --scenario scenarios/carbanak_inspired.yaml
 ```
 
+## AI Facilitator Requirements
+
+Incidenter uses AI to provide intelligent, context-aware facilitation during incident response scenarios. The system supports multiple AI providers with automatic fallback to mock responses if no AI is configured.
+
+### Supported AI Providers
+
+#### Google AI (Recommended)
+- **Gemini API**: Easiest setup, best for individual use
+- **Vertex AI**: Enterprise-grade, best for production deployments
+
+#### OpenAI
+- **GPT Models**: Alternative AI provider support
+
+### Authentication Setup
+
+#### Option 1: Google AI API Key (Recommended)
+```bash
+# Get your API key from https://makersuite.google.com/app/apikey
+export GOOGLE_AI_API_KEY="your_api_key_here"
+
+# Test the connection
+python incidenter.py setup
+```
+
+#### Option 2: Google Cloud Application Default Credentials (ADC)
+```bash
+# Install Google Cloud CLI
+# macOS: brew install google-cloud-sdk
+# Windows/Linux: https://cloud.google.com/sdk/docs/install
+
+# Authenticate with Google Cloud
+gcloud auth login --update-adc
+
+# Set your project (optional, but recommended)
+export GOOGLE_CLOUD_PROJECT="your-project-id"
+
+# Test the connection
+python incidenter.py setup
+```
+
+#### Option 3: OpenAI API Key - technically havent tested openAI. Maybe ill get a key, maybe i wont.
+```bash
+# Get your API key from https://platform.openai.com/api-keys
+export OPENAI_API_KEY="your_openai_api_key_here"
+
+# Test the connection
+python incidenter.py setup
+```
+
+### Environment Variables
+
+| Variable | Purpose | Required |
+|----------|---------|----------|
+| `GOOGLE_AI_API_KEY` | Gemini API authentication | For Google AI |
+| `GOOGLE_CLOUD_PROJECT` | GCP project for Vertex AI | For ADC setup |
+| `OPENAI_API_KEY` | OpenAI API authentication | For OpenAI |
+
+### Fallback Behavior
+
+If no AI provider is configured, Incidenter automatically falls back to:
+- **Mock Facilitator**: Pre-scripted responses based on scenario structure
+- **Static Evidence**: Deterministic clue delivery without AI enhancement
+- **Basic Scoring**: Rule-based evaluation without AI insights
+
+This ensures the game remains fully functional even without AI credentials.
+
 ## CLI Game Structure
 
 ### Scenario Components
@@ -88,7 +154,8 @@ incidenter/
 
 ## Usage Examples
 
-### Generate Custom Scenario
+### Generate Custom Scenario. 
+Scenario generation is iffy at the moment.  Needs refined into multi step prompts.   
 ```bash
 python incidenter.py generate \
   --sector healthcare \
