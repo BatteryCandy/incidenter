@@ -139,7 +139,6 @@ Enter your choice: Check process details
 - **Responsive Design**: Works on desktop, tablet, and mobile
 - **AI Fallbacks**: Intelligent responses even without AI API keys
 
-For detailed web interface setup and usage, see [WEB_INTERFACE_GUIDE.md](WEB_INTERFACE_GUIDE.md).
 
 ## Contributing
 
