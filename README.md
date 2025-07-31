@@ -33,7 +33,7 @@ python incidenter.py validate
 python incidenter.py generate --sector finance --org-size large --infra hybrid
 
 # Start a CLI game session
-python incidenter.py play --scenario scenarios/carbanak_inspired.yaml
+python incidenter.py play scenarios/library/carbanak_inspired.yaml
 ```
 
 ## AI Facilitator Requirements
@@ -170,7 +170,7 @@ python incidenter.py generate \
 
 #### CLI Interface
 ```bash
-$ python incidenter.py play --scenario scenarios/carbanak_inspired.yaml
+$ python incidenter.py play scenarios/library/carbanak_inspired.yaml
 
 🚨 INCIDENT ALERT 🚨
 A suspicious PowerShell process has been detected on a domain controller.
