@@ -172,19 +172,120 @@ python incidenter.py generate \
 ```bash
 $ python incidenter.py play scenarios/library/carbanak_inspired.yaml
 
-🚨 INCIDENT ALERT 🚨
-A suspicious PowerShell process has been detected on a domain controller.
-Time: 2024-03-15 14:23:17 UTC
-Host: DC01.contoso.local
-Process: powershell.exe -enc <base64_blob>
+🚨 INCIDENT RESPONSE EXERCISE
+Loading scenario and initializing AI facilitator...
 
-What would you like to investigate first?
-> Check process details
-> Examine network connections
-> Review authentication logs
-> Analyze PowerShell command
+✅ Google AI facilitator initialized successfully
+╭────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ 🚨 INCIDENT RESPONSE EXERCISE 🚨                                                                                                                                       │
+│                                                                                                                                                                        │
+│ Scenario: Operation Digital Heist                                                                                                                                      │
+│ Organization: Regional Trust Bank                                                                                                                                      │
+│ Sector: Finance                                                                                                                                                        │
+│ Difficulty: Hard                                                                                                                                                       │
+│ Team Size: 1                                                                                                                                                           │
+│ Estimated Duration: 90 minutes                                                                                                                                         │
+│                                                                                                                                                                        │
+│                                                                                                                                                                        │
+│ You are the incident response team for this organization.                                                                                                              │
+│ Your goal is to investigate the incident, identify the attack methodology,                                                                                             │
+│ and reconstruct the complete attack timeline.                                                                                                                          │
+│                                                                                                                                                                        │
+│ ⚠️  Remember: Not all evidence is reliable. Stay vigilant for red herrings! ⚠️                                                                                           │
+╰────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+╭───────────────────────────────────────────────────────────────────────────── Instructions ─────────────────────────────────────────────────────────────────────────────╮
+│ How to Play:                                                                                                                                                           │
+│ • Ask specific investigative questions (e.g., "Check firewall logs", "Examine running processes")                                                                      │
+│ • You can request up to 20 investigation questions                                                                                                                     │
+│ • The AI facilitator will provide one clue per investigation                                                                                                           │
+│ • Build your theory of the attack as you gather evidence                                                                                                               │
+│ • Submit your final assessment when ready                                                                                                                              │
+│                                                                                                                                                                        │
+│ Commands:                                                                                                                                                              │
+│ • Type your investigation request naturally                                                                                                                            │
+│ • Type 'theory' to submit your current attack theory                                                                                                                   │
+│ • Type 'status' to see your progress                                                                                                                                   │
+│ • Type 'evidence' to view discovered clues                                                                                                                             │
+│ • Type 'help' for more options                                                                                                                                         │
+│ • Type 'quit' to exit (you can resume later)                                                                                                                           │
+╰────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
 
-Enter your choice: Check process details
+Press Enter to begin the incident response...
+
+╭──────────────────────────────────────────────────────────────────────────── Initial Alert ─────────────────────────────────────────────────────────────────────────────╮
+│ 🚨 SECURITY ALERT 🚨                                                                                                                                                   │
+│                                                                                                                                                                        │
+│ Alert Type: High                                                                                                                                                       │
+│ Severity: UNKNOWN                                                                                                                                                      │
+│ Source: Unknown                                                                                                                                                        │
+│ Time: 2024-05-20 09:30:00                                                                                                                                              │
+│                                                                                                                                                                        │
+│ Description:                                                                                                                                                           │
+│ Unusual encrypted traffic patterns detected to external IP addresses. Multiple endpoints showing signs of compromise.                                                  │
+│                                                                                                                                                                        │
+│ Raw Alert Data:                                                                                                                                                        │
+│ No additional raw data available.                                                                                                                                      │
+╰────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+╭──────────────────────────────────────────────────────────────────────────────── Status ────────────────────────────────────────────────────────────────────────────────╮
+│ Investigation Questions Remaining: 20                                                                                                                                  │
+│ Clues Discovered: 0                                                                                                                                                    │
+│ Current Score: 0                                                                                                                                                       │
+╰────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+
+What would you like to investigate?: investigate the reputation of the external ip addresses
+
+╭──────────────────────────────────────────────────────────────────────── Investigation Results ─────────────────────────────────────────────────────────────────────────╮
+│ Investigation Request: investigate the reputation of the external ip addresses                                                                                         │
+│                                                                                                                                                                        │
+│ Findings:                                                                                                                                                              │
+│ Okay, let's investigate the reputation of those external IP addresses. This is a crucial step in understanding the source and potential severity of the incident.      │
+│ Here's what you find:                                                                                                                                                  │
+│                                                                                                                                                                        │
+│ **Reputation Analysis Results:**                                                                                                                                       │
+│                                                                                                                                                                        │
+│ *   **IP Address 1 (Let's call it 203.0.113.1):** This IP address is listed on several public blocklists (Spamhaus, AbuseIPDB) with a moderate to high confidence      │
+│ score for sending spam and being involved in brute-force attacks. There are also reports indicating it has recently hosted phishing sites.                             │
+│                                                                                                                                                                        │
+│ *   **IP Address 2 (Let's call it 198.51.100.2):** This IP has a relatively clean reputation. Some historical data shows it was associated with a Tor exit node a few  │
+│ months ago, but no recent malicious activity is attributed to it. It's possible this IP is being used legitimately or has been compromised recently.                   │
+│                                                                                                                                                                        │
+│ *   **IP Address 3 (Let's call it 192.0.2.3):** This IP address is associated with a known cloud hosting provider (e.g., AWS, Azure, GCP). This doesn't automatically  │
+│ mean it's malicious, but it warrants closer scrutiny, as attackers frequently use cloud infrastructure to mask their activities. You'll need to investigate further to │
+│ determine its role in the incident.                                                                                                                                    │
+│                                                                                                                                                                        │
+│ **Interpretation:**                                                                                                                                                    │
+│                                                                                                                                                                        │
+│ The presence of one IP address (203.0.113.1) on multiple blocklists strongly suggests malicious activity originating from that source. The second IP (198.51.100.2)    │
+│ being a former Tor exit node is not necessarily malicious in and of itself, but warrants keeping an eye on. The third IP (192.0.2.3) requires more investigation since │
+│ it is from a cloud provider. This could be legitimate traffic, or an attacker using cloud resources.                                                                   │
+│                                                                                                                                                                        │
+│ This information can help you prioritize your investigation efforts and potentially block or rate-limit traffic from the identified malicious IP address (203.0.113.1) │
+│ to contain the incident. Remember to consider the possibility of false positives and investigate further before taking drastic actions that could disrupt legitimate   │
+│ business operations.                                                                                                                                                   │
+╰────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+
+💡 Suggested follow-up investigations:
+  1. Continue investigating based on this information
+
+Would you like to submit your theory now? [y/n] (n): n
+╭──────────────────────────────────────────────────────────────────────────────── Status ────────────────────────────────────────────────────────────────────────────────╮
+│ Investigation Questions Remaining: 19                                                                                                                                  │
+│ Clues Discovered: 1                                                                                                                                                    │
+│ Current Score: 0                                                                                                                                                       │
+╰────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+
+What would you like to investigate?: evidence
+                                                                 Discovered Evidence                                                                 
+┏━━━━━━━━━━┳━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ ID       ┃ Time     ┃ Investigation                            ┃ Key Findings                                                                     ┃
+┡━━━━━━━━━━╇━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩
+│ E001     │ 3.183    │ investigate the reputation of the e...   │ This is a crucial step in understanding the source and potential severity o...   │
+└──────────┴──────────┴──────────────────────────────────────────┴──────────────────────────────────────────────────────────────────────────────────┘
+
+Total Evidence Items: 1
+Unique Clues Discovered: 1
+
+💡 Tip: Use 'evidence detail E001' to see full details for a specific evidence item
 ```
 
 #### Web Interface
