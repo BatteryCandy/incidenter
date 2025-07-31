@@ -333,3 +333,15 @@ Unique Clues Discovered: 1
 - Validate all scenarios: `python -m incidenter.py validate`
 
 ## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request. For major changes, please open an issue first to discuss what you would like to change.
+
+## Acknowledgments
+
+- Based on real-world cybersecurity incidents for educational purposes
+- Inspired by MITRE ATT&CK framework for kill chain methodology
+- Built with AI-powered facilitation for enhanced learning experiences
