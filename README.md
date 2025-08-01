@@ -1,3 +1,5 @@
+<img src="image.png" alt="Incidenter" width="250">  
+
 # Incidenter - Tabletop Cybersecurity Incident Simulator
 
 Incidenter is a CLI and web-based tabletop cybersecurity incident response game that uses real-world historical attacks as inspiration to build fictional but realistic incident scenarios. Players act as an incident response team attempting to identify the attacker's full kill chain based on investigative actions and clues returned by an AI facilitator.
