@@ -31,6 +31,15 @@ python incidenter.py list-scenarios
 # Validate all scenarios
 python incidenter.py validate
 
+# Validate only library scenarios  
+python incidenter.py validate --library-only
+
+# Validate only generated scenarios
+python incidenter.py validate --generated-only
+
+# Validate a specific scenario
+python incidenter.py validate scenarios/library/carbanak_inspired.yaml
+
 # Generate a new scenario
 python incidenter.py generate --sector finance --org-size large --infra hybrid
 
@@ -332,7 +341,9 @@ Unique Clues Discovered: 1
 - Run all tests: `python tests/run_all_tests.py`
 - Run web interface tests: `python tests/test_web_interface.py`
 - Run GCP authentication + AI facilitator tests: `python tests/test_gcp_credentials.py`
-- Validate all scenarios: `python -m incidenter.py validate`
+- Validate all scenarios: `python incidenter.py validate`
+- Validate only library scenarios: `python incidenter.py validate --library-only`
+- Validate specific scenario: `python incidenter.py validate scenarios/library/scenario.yaml`
 
 ## License
 

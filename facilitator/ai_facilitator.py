@@ -58,7 +58,16 @@ class AIFacilitator:
         self._initialize_client()
 
         # Game context and memory
-        self.game_context = {}
+        self.game_context = {
+            "scenario_id": None,
+            "scenario_name": None,
+            "difficulty": "medium",
+            "attack_type": None,
+            "timeline": {},
+            "evidence_discovered": [],
+            "theories_submitted": [],
+            "investigation_actions": [],
+        }
         self.conversation_history = []
         self.scenario_data = {}
 
@@ -839,9 +848,14 @@ class MockFacilitator(AIFacilitator):
 
         # Game context and memory - properly initialize like the real facilitator
         self.game_context = {
-            "investigation_actions": [],
+            "scenario_id": None,
+            "scenario_name": None,
+            "difficulty": "medium",
+            "attack_type": None,
+            "timeline": {},
             "evidence_discovered": [],
             "theories_submitted": [],
+            "investigation_actions": [],
         }
         self.conversation_history = []
         self.scenario_data = {}
