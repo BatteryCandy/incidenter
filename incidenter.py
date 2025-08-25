@@ -265,10 +265,10 @@ def validate(scenario_file, all, library_only, generated_only):
         sys.exit(1)
 
     # If no file specified and no --all flag, default to validating all
-    if not scenario_file and not all:
-        all = True
+    if not scenario_file and not validate_all:
+        validate_all = True
 
-    if all or not scenario_file:
+    if validate_all:
         # Validate all scenarios
         console.print("\n🔍 [bold blue]Validating All Scenarios[/bold blue]\n")
 
