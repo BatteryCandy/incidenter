@@ -39,7 +39,23 @@ def cli():
 @cli.command()
 @click.option(
     "--sector",
-    type=click.Choice(["finance", "healthcare", "government", "technology", "retail"]),
+    type=click.Choice(
+        [
+            "finance",
+            "healthcare",
+            "government",
+            "technology",
+            "retail",
+            "energy",
+            "manufacturing",
+            "education",
+            "transportation",
+            "utilities",
+            "telecommunications",
+            "media",
+            "defense",
+        ]
+    ),
     help="Target organization sector",
 )
 @click.option(
@@ -219,31 +235,154 @@ def list_scenarios(library, generated):
 
 
 @cli.command()
-@click.argument("scenario_file")
-def validate(scenario_file):
-    """Validate a scenario file against the template schema."""
+@click.argument("scenario_file", required=False)
+@click.option(
+    "--all",
+    is_flag=True,
+    help="Validate all scenario files in the scenarios folder",
+)
+@click.option(
+    "--library-only",
+    is_flag=True,
+    help="Only validate library scenarios (excludes generated)",
+)
+@click.option(
+    "--generated-only",
+    is_flag=True,
+    help="Only validate generated scenarios (excludes library)",
+)
+def validate(scenario_file, all, library_only, generated_only):
+    """Validate scenario file(s) against the template schema.
 
-    if not Path(scenario_file).exists():
-        console.print(f"❌ [red]Scenario file not found: {scenario_file}[/red]")
+    If no scenario_file is provided and --all is not specified,
+    validates all scenarios by default.
+    """
+
+    if library_only and generated_only:
+        console.print(
+            "❌ [red]Cannot specify both --library-only and --generated-only[/red]"
+        )
         sys.exit(1)
 
-    console.print(f"\n🔍 [bold blue]Validating Scenario[/bold blue]: {scenario_file}")
+    # If no file specified and no --all flag, default to validating all
+    if not scenario_file and not all:
+        all = True
 
-    try:
+    if all or not scenario_file:
+        # Validate all scenarios
+        console.print("\n🔍 [bold blue]Validating All Scenarios[/bold blue]\n")
+
         manager = ScenarioManager()
-        is_valid, errors = manager.validate_scenario(scenario_file)
 
-        if is_valid:
-            console.print("✅ [green]Scenario is valid![/green]")
+        # Get list of scenarios to validate
+        if library_only:
+            scenarios = manager.list_scenarios(library_only=True)
+        elif generated_only:
+            scenarios = manager.list_scenarios(generated_only=True)
         else:
-            console.print("❌ [red]Scenario validation failed:[/red]")
-            for error in errors:
-                console.print(f"  • {error}")
+            scenarios = manager.list_scenarios()
+
+        if not scenarios:
+            console.print("📁 [yellow]No scenario files found to validate[/yellow]")
+            return
+
+        # Validate each scenario
+        total_scenarios = len(scenarios)
+        valid_scenarios = 0
+        invalid_scenarios = 0
+        validation_results = []
+
+        for scenario_info in scenarios:
+            scenario_path = scenario_info["file_path"]
+            scenario_name = scenario_info["metadata"].get(
+                "name", Path(scenario_path).stem
+            )
+
+            try:
+                is_valid, errors = manager.validate_scenario(scenario_path)
+
+                if is_valid:
+                    valid_scenarios += 1
+                    validation_results.append(
+                        {
+                            "file": scenario_path,
+                            "name": scenario_name,
+                            "valid": True,
+                            "errors": [],
+                        }
+                    )
+                    console.print(
+                        f"✅ [green]{scenario_name}[/green] ({Path(scenario_path).name})"
+                    )
+                else:
+                    invalid_scenarios += 1
+                    validation_results.append(
+                        {
+                            "file": scenario_path,
+                            "name": scenario_name,
+                            "valid": False,
+                            "errors": errors,
+                        }
+                    )
+                    console.print(
+                        f"❌ [red]{scenario_name}[/red] ({Path(scenario_path).name})"
+                    )
+                    for error in errors:
+                        console.print(f"   • {error}")
+
+            except Exception as e:
+                invalid_scenarios += 1
+                validation_results.append(
+                    {
+                        "file": scenario_path,
+                        "name": scenario_name,
+                        "valid": False,
+                        "errors": [f"Exception during validation: {e}"],
+                    }
+                )
+                console.print(
+                    f"❌ [red]{scenario_name}[/red] ({Path(scenario_path).name}) - Error: {e}"
+                )
+
+        # Print summary
+        console.print(f"\n📊 [bold blue]Validation Summary[/bold blue]")
+        console.print(f"[green]✅ Valid scenarios: {valid_scenarios}[/green]")
+        console.print(f"[red]❌ Invalid scenarios: {invalid_scenarios}[/red]")
+        console.print(f"[blue]📁 Total scenarios: {total_scenarios}[/blue]")
+
+        if invalid_scenarios > 0:
+            console.print(
+                f"\n[yellow]⚠️  {invalid_scenarios} scenario(s) failed validation[/yellow]"
+            )
+            sys.exit(1)
+        else:
+            console.print(f"\n[green]🎉 All scenarios are valid![/green]")
+
+    else:
+        # Validate single scenario file
+        if not Path(scenario_file).exists():
+            console.print(f"❌ [red]Scenario file not found: {scenario_file}[/red]")
             sys.exit(1)
 
-    except Exception as e:
-        console.print(f"❌ [red]Error validating scenario: {e}[/red]")
-        sys.exit(1)
+        console.print(
+            f"\n🔍 [bold blue]Validating Scenario[/bold blue]: {scenario_file}"
+        )
+
+        try:
+            manager = ScenarioManager()
+            is_valid, errors = manager.validate_scenario(scenario_file)
+
+            if is_valid:
+                console.print("✅ [green]Scenario is valid![/green]")
+            else:
+                console.print("❌ [red]Scenario validation failed:[/red]")
+                for error in errors:
+                    console.print(f"  • {error}")
+                sys.exit(1)
+
+        except Exception as e:
+            console.print(f"❌ [red]Error validating scenario: {e}[/red]")
+            sys.exit(1)
 
 
 @cli.command()

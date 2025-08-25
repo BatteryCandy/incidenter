@@ -127,6 +127,14 @@ class ScenarioManager:
                     "government",
                     "technology",
                     "retail",
+                    "energy",
+                    "manufacturing",
+                    "education",
+                    "transportation",
+                    "utilities",
+                    "telecommunications",
+                    "media",
+                    "defense",
                 ]:
                     errors.append(f"Invalid sector: {env['sector']}")
 
